@@ -16,3 +16,4 @@ WebRTC Networking: Leverage peer-to-peer connections for a truly decentralized n
 
 Responsive Design: Enjoy a consistent experience across desktop and mobile devices with a fully responsive UI.
 
+Notice: I have kept it local for testing, consider setting up a websocket so that it is not limited to local use.
