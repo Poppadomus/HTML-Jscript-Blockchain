@@ -1,6 +1,8 @@
 FTL - FasterThanLight Blockchain Architecture
 
 Welcome to FTL, a cutting-edge decentralized cryptocurrency architecture designed to empower users with a seamless and feature-rich experience. FTL combines a unique graphical user interface (GUI) with robust blockchain functionality, enabling wallet management, transactions, mining, staking, and real-time peer-to-peer communication—all in one platform.
+
+How to use: Just copy index.html that's all's you need.
 Features
 Wallet Management: Securely create or access wallets using a public/private key pair and a passphrase for enhanced security.
 
