@@ -1,13 +1,18 @@
-# KryoCoin Blockchain
+FTL - FasterThanLight Blockchain Architecture
 
-KryoCoin (KRY) is a decentralized cryptocurrency platform featuring a unique GUI interface for wallet management, transactions, mining, staking, and peer-to-peer chat.
+Welcome to FTL, a cutting-edge decentralized cryptocurrency architecture designed to empower users with a seamless and feature-rich experience. FTL combines a unique graphical user interface (GUI) with robust blockchain functionality, enabling wallet management, transactions, mining, staking, and real-time peer-to-peer communication—all in one platform.
+Features
+Wallet Management: Securely create or access wallets using a public/private key pair and a passphrase for enhanced security.
 
-## Features
+Transactions: Effortlessly send and receive KRY tokens through an intuitive, user-friendly interface.
 
-- **Wallet Management**: Create or log into wallets using a public/private key pair and passphrase
-- **Transactions**: Send and receive KRY with a simple interface
-- **Mining**: Mine blocks with a dynamic reward system based on staking
-- **Fractal Staking**: Stake KRY in fractal chunks with time-locked rewards
-- **P2P Chat**: Communicate with connected peers in real-time
-- **WebRTC Networking**: Peer-to-peer connections for decentralization
-- **Responsive Design**: Works across desktop and mobile devices
+Mining: Participate in block mining with a dynamic reward system tied to staking activity.
+
+Fractal Staking: Stake your tokens in flexible, fractal-based chunks with time-locked rewards for optimal returns.
+
+P2P Chat: Engage in real-time communication with connected peers directly within the platform.
+
+WebRTC Networking: Leverage peer-to-peer connections for a truly decentralized network experience.
+
+Responsive Design: Enjoy a consistent experience across desktop and mobile devices with a fully responsive UI.
+
