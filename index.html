@@ -1,326 +1,518 @@
+<?php get_header(); ?>
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KryoCoin Dashboard</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Helvetica', 'Arial', sans-serif; min-height: 100vh; display: flex; flex-direction: column; background: #000000; overflow: auto; }
+        :root {
+            --original-bg: #000000;
+            --original-container-bg: #1C252E;
+            --original-stats-bg: #192734;
+            --original-stats-item-bg: #2C2F33;
+            --original-text-color: #FFFFFF;
+            --original-accent: #1DA1F2;
+            --original-border: #38444D;
+            --original-shadow: rgba(29, 161, 242, 0.5);
+            --original-log-bg: #2C2F33;
+            --original-log-text: #8899A6;
+            --original-button-bg: #192734;
+            --original-button-hover: #1DA1F2;
+            --celestial-bg: linear-gradient(135deg, #0F0C29 0%, #302B63 50%, #24243E 100%);
+            --celestial-bg-stars: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Cg fill="%23FFFFFF" fill-opacity="0.1"%3E%3Ccircle cx="10" cy="10" r="1"/%3E%3Ccircle cx="90" cy="20" r="0.5"/%3E%3Ccircle cx="30" cy="80" r="0.8"/%3E%3Ccircle cx="70" cy="60" r="1.2"/%3E%3C/g%3E%3C/svg%3E');
+            --celestial-container-bg: linear-gradient(45deg, rgba(19, 15, 64, 0.9), rgba(48, 43, 99, 0.9));
+            --celestial-stats-bg: linear-gradient(90deg, #130F40, #483D8B);
+            --celestial-stats-item-bg: rgba(72, 61, 139, 0.7);
+            --celestial-text-color: #E0E0FF;
+            --celestial-accent: #6C5CE7;
+            --celestial-border: rgba(108, 92, 231, 0.5);
+            --celestial-shadow: rgba(108, 92, 231, 0.5);
+            --celestial-log-bg: rgba(19, 15, 64, 0.7);
+            --celestial-log-text: #B0C4DE;
+            --celestial-button-bg: linear-gradient(45deg, #483D8B, #6C5CE7);
+            --celestial-button-hover: linear-gradient(45deg, #6C5CE7, #9370DB);
+            --dark-bg: #121212;
+            --dark-container-bg: #1E1E1E;
+            --dark-stats-bg: #252525;
+            --dark-stats-item-bg: #2D2D2D;
+            --dark-text-color: #E0E0E0;
+            --dark-accent: #BB86FC;
+            --dark-border: #424242;
+            --dark-shadow: rgba(187, 134, 252, 0.5);
+            --dark-log-bg: #2D2D2D;
+            --dark-log-text: #B0B0B0;
+            --dark-button-bg: #252525;
+            --dark-button-hover: #BB86FC;
+            --light-bg: #F5F5F5;
+            --light-container-bg: #FFFFFF;
+            --light-stats-bg: #E0E0E0;
+            --light-stats-item-bg: #F0F0F0;
+            --light-text-color: #333333;
+            --light-accent: #6200EA;
+            --light-border: #B0B0B0;
+            --light-shadow: rgba(98, 0, 234, 0.3);
+            --light-log-bg: #F0F0F0;
+            --light-log-text: #666666;
+            --light-button-bg: #E0E0E0;
+            --light-button-hover: #6200EA;
+            --bg: var(--original-bg);
+            --container-bg: var(--original-container-bg);
+            --stats-bg: var(--original-stats-bg);
+            --stats-item-bg: var(--original-stats-item-bg);
+            --text-color: var(--original-text-color);
+            --accent: var(--original-accent);
+            --border: var(--original-border);
+            --shadow: var(--original-shadow);
+            --log-bg: var(--original-log-bg);
+            --log-text: var(--original-log-text);
+            --button-bg: var(--original-button-bg);
+            --button-hover: var(--original-button-hover);
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg);
+            overflow: auto;
+        }
+        body.celestial { background: var(--celestial-bg); background-image: var(--celestial-bg-stars); }
         #page, #main, .site-main, .content-area { margin-left: 0 !important; padding-left: 0 !important; float: none !important; width: 100% !important; display: flex; justify-content: center; flex: 1; }
-        canvas#particleCanvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
-        
-
-    .container { 
-        width: 95vw; 
-        max-width: 1200px; 
-        margin: 2vh auto; 
-        background: #1C252E; 
-        border-radius: 8px; 
-        box-shadow: 0 0 20px rgba(29, 161, 242, 0.5); 
-        color: #FFFFFF; 
-        z-index: 1; 
-        animation: fadeIn 0.5s ease-in-out; 
-        display: flex; 
-        flex-direction: column; 
-        padding: 2vw; 
-        gap: 2vh; 
-        min-height: 96vh; 
-        position: relative; 
-    }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-    .hud { 
-        position: fixed; 
-        top: 0; 
-        left: 0; 
-        width: 100%; 
-        background: rgba(28, 37, 46, 0.9); 
-        padding: 1vh 2vw; 
-        display: flex; 
-        align-items: center; 
-        gap: 1vw; 
-        z-index: 2; 
-        border-bottom: 1px solid #38444D; 
-        font-family: 'Courier New', monospace; 
-        font-size: clamp(0.8rem, 1.2vw, 1rem); 
-        color: #FFFFFF; 
-    }
-    .hud i.material-icons { color: #1DA1F2; }
-    .hud span { margin-right: 2vw; }
-
-    .header { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        padding: 2vh 0; 
-        margin-top: 6vh; 
-    }
-    .left-buttons { display: flex; gap: 1vw; }
-    .social-links { display: flex; gap: 1vw; }
-    .social-links a, .left-buttons a { 
-        padding: 1vh; 
-        background: #2C2F33; 
-        border: 1px solid #38444D; 
-        border-radius: 6px; 
-        color: #FFFFFF; 
-        transition: background 0.3s, transform 0.2s; 
-        display: flex; 
-        align-items: center; 
-    }
-    .social-links a:hover, .left-buttons a:hover { background: #1DA1F2; transform: scale(1.05); }
-    
-    .onboarding, .dashboard, .readme { 
-        display: none; 
-        flex-direction: column; 
-        gap: 2vh; 
-        flex: 1; 
-    }
-    .onboarding.visible, .dashboard.visible, .readme.visible { display: flex; }
-    
-    .sidebar { 
-        width: 20vw; 
-        min-width: 180px; 
-        background: #192734; 
-        padding: 2vw; 
-        display: flex; 
-        flex-direction: column; 
-        gap: 1.5vh; 
-        border-right: 1px solid #38444D; 
-        height: 100%; 
-    }
-    .sidebar h2 { 
-        font-size: clamp(1.2rem, 2.5vw, 1.5rem); 
-        margin-bottom: 2vh; 
-        text-align: center; 
-        text-shadow: 0 0 5px rgba(29, 161, 242, 0.5); 
-    }
-    .sidebar button { 
-        padding: 1vh 1vw; 
-        font-size: clamp(0.9rem, 1.5vw, 1rem); 
-        background: #2C2F33; 
-        border: 1px solid #38444D; 
-        color: #FFFFFF; 
-        border-radius: 6px; 
-        cursor: pointer; 
-        transition: background 0.3s, transform 0.2s; 
-        display: flex; 
-        align-items: center; 
-        gap: 1vw; 
-    }
-    .sidebar button:hover { background: #1DA1F2; transform: scale(1.05); }
-    .sidebar button.active { background: #1DA1F2; box-shadow: 0 0 10px rgba(29, 161, 242, 0.8); }
-    
-    .content-area { flex: 1; display: flex; flex-direction: row; height: 100%; }
-    .content { 
-        flex: 1; 
-        padding: 2vw; 
-        display: none; 
-        flex-direction: column; 
-        gap: 2vh; 
-        overflow-y: auto; 
-    }
-    .content.visible { display: flex; }
-    
-    h3 { 
-        font-size: clamp(1.2rem, 2.5vw, 1.5rem); 
-        text-align: center; 
-        text-shadow: 0 0 5px rgba(29, 161, 242, 0.5); 
-    }
-    .input-group { 
-        display: flex; 
-        align-items: center; 
-        gap: 1vw; 
-        position: relative; 
-        width: 100%; 
-    }
-    input, textarea { 
-        flex: 1; 
-        padding: 1vh 1vw 1vh 5vw; 
-        font-size: clamp(0.9rem, 1.5vw, 1rem); 
-        border: 1px solid #38444D; 
-        background: #2C2F33; 
-        color: #FFFFFF; 
-        border-radius: 6px; 
-        transition: border-color 0.3s; 
-        font-family: 'Courier New', monospace; 
-    }
-    input:focus, textarea:focus { border-color: #1DA1F2; outline: none; }
-    .input-group .material-icons { color: #FFFFFF; }
-    .input-group .prefix-icon { position: absolute; left: 1vw; top: 50%; transform: translateY(-50%); }
-    .input-group .copy-icon { position: absolute; left: 3vw; top: 50%; transform: translateY(-50%); cursor: pointer; transition: color 0.3s; }
-    .input-group .paste-icon { cursor: pointer; transition: color 0.3s; }
-    .copy-icon:hover, .paste-icon:hover { color: #1DA1F2; }
-    
-    button { 
-        padding: 1vh 2vw; 
-        font-size: clamp(0.9rem, 1.5vw, 1rem); 
-        background: #192734; 
-        border: 1px solid #38444D; 
-        color: #FFFFFF; 
-        cursor: pointer; 
-        border-radius: 6px; 
-        transition: background 0.3s, transform 0.2s; 
-        display: flex; 
-        align-items: center; 
-        gap: 0.5vw; 
-        font-family: 'Courier New', monospace; 
-    }
-    button:hover { background: #1DA1F2; transform: scale(1.05); }
-    .button-group { display: flex; justify-content: center; gap: 1.5vw; flex-wrap: wrap; margin-top: 1.5vh; }
-    
-    .log { 
-        border: 1px solid #38444D; 
-        height: 15vh; 
-        min-height: 100px; 
-        overflow-y: auto; 
-        padding: 1vh; 
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem); 
-        background: #2C2F33; 
-        color: #8899A6; 
-        border-radius: 6px; 
-        font-family: 'Courier New', monospace; 
-        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); 
-    }
-    #status { 
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem); 
-        padding: 1vh; 
-        text-align: left; 
-        background: #2C2F33; 
-        border: 1px solid #38444D; 
-        border-radius: 6px; 
-        font-family: 'Courier New', monospace; 
-        position: absolute; 
-        bottom: 1vh; 
-        left: 1vw; 
-    }
-    .instructions { 
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem); 
-        padding: 1vh; 
-        background: #2C2F33; 
-        border: 1px solid #38444D; 
-        border-radius: 6px; 
-        text-align: center; 
-        font-family: 'Courier New', monospace; 
-    }
-    .key-display { 
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem); 
-        padding: 1vh; 
-        background: #2C2F33; 
-        border: 1px solid #38444D; 
-        border-radius: 6px; 
-        display: flex; 
-        align-items: center; 
-        gap: 1vw; 
-        position: relative; 
-        width: 100%; 
-        font-family: 'Courier New', monospace; 
-    }
-    .key-display .material-icons { position: absolute; left: 1vw; top: 50%; transform: translateY(-50%); color: #FFFFFF; }
-    .key-display span { flex: 1; padding: 0 4vw; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; color: #FFFFFF; }
-    .key-display button { padding: 1vh; }
-    
-    #walletInfo, #fractalStakeInfo { 
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem); 
-        padding: 1vh; 
-        background: #2C2F33; 
-        border: 1px solid #38444D; 
-        border-radius: 6px; 
-        text-align: center; 
-        font-family: 'Courier New', monospace; 
-        margin: 0.5vh 0; 
-        word-wrap: break-word; 
-    }
-    #burnDialog { 
-        display: none; 
-        position: fixed; 
-        top: 50%; 
-        left: 50%; 
-        transform: translate(-50%, -50%); 
-        background: #1C252E; 
-        border: 2px solid #FF3333; 
-        padding: 1.5vh; 
-        color: #FF3333; 
-        border-radius: 6px; 
-        z-index: 10; 
-        box-shadow: 0 0 15px rgba(255, 51, 51, 0.5); 
-        font-family: 'Courier New', monospace; 
-        width: 90vw; 
-        max-width: 400px; 
-    }
-    #burnDialog input { border-color: #FF3333; background: #2C2F33; color: #FFFFFF; }
-    #burnDialog button { background: #FF3333; color: #FFFFFF; border: none; }
-    #burnDialog button:hover { background: #FF5555; transform: scale(1.05); }
-    
-    #chatLog { height: 30vh; overflow-y: auto; }
-    #chatLog div { word-wrap: break-word; overflow-wrap: break-word; white-space: normal; }
-    #chatLog .sender { font-weight: bold; }
-    #chatInput { padding: 1vh; resize: none; }
-    
-    .color-picker, .username-picker { display: flex; align-items: center; gap: 0.5vw; margin-top: 1vh; }
-    .color-picker label, .username-picker label { font-size: clamp(0.8rem, 1.2vw, 0.9rem); color: #FFFFFF; }
-    .color-picker input[type="color"] { width: 40px; height: 40px; border: none; background: none; cursor: pointer; }
-    .username-picker input[type="text"] { padding: 0.5vh 1vw; font-size: clamp(0.8rem, 1.2vw, 0.9rem); width: 150px; }
-    
-    .readme-content { 
-        padding: 2vw; 
-        font-size: clamp(0.9rem, 1.5vw, 1rem); 
-        background: #2C2F33; 
-        border: 1px solid #38444D; 
-        border-radius: 6px; 
-        font-family: 'Courier New', monospace; 
-        overflow-y: auto; 
-        flex: 1; 
-    }
-    .footer { 
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem); 
-        padding: 1vh; 
-        text-align: center; 
-        background: #192734; 
-        border-top: 1px solid #38444D; 
-        border-radius: 0 0 8px 8px; 
-        color: #8899A6; 
-        font-family: 'Courier New', monospace; 
-    }
-    
-    @media (max-width: 768px) { 
-        .content-area { flex-direction: column; } 
-        .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #38444D; padding: 2vh; } 
-        .sidebar button { justify-content: center; } 
-        .container { padding: 3vw; } 
-        .header { flex-direction: column; gap: 1vh; } 
-        .left-buttons, .social-links { justify-content: center; width: 100%; } 
-        .hud { flex-direction: column; align-items: flex-start; padding: 1vh; }
-    }
-    @media (max-width: 480px) { 
-        .input-group { flex-direction: column; align-items: stretch; } 
-        .input-group .paste-icon { position: static; transform: none; margin: 1vh auto; } 
-        .button-group { flex-direction: column; gap: 1vh; } 
-        .sidebar { min-width: 100%; } 
-        .social-links { flex-wrap: wrap; } 
-        .username-picker input[type="text"] { width: 100%; } 
-        .hud { font-size: 0.7rem; }
-    }
-</style>
-
+        .container {
+            width: 95vw;
+            max-width: 1200px;
+            margin: 2vh auto;
+            background: var(--container-bg);
+            border-radius: 8px;
+            box-shadow: 0 0 20px var(--shadow);
+            color: var(--text-color);
+            z-index: 1;
+            animation: fadeIn 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 0 2vw 2vw;
+            gap: 2vh;
+            min-height: 96vh;
+            position: relative;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .stats-strip {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: var(--stats-bg);
+            padding: 1vh 2vw;
+            border-bottom: 1px solid var(--border);
+            border-radius: 8px 8px 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-family: 'Courier New', monospace;
+            font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+        }
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5vw;
+            color: var(--text-color);
+            padding: 0.5vh 1vw;
+            background: var(--stats-item-bg);
+            border-radius: 4px;
+            transition: transform 0.2s;
+        }
+        .stat-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--shadow);
+        }
+        .stat-item .material-icons {
+            font-size: 1.2rem;
+            color: var(--accent);
+        }
+        .onboarding .stats-strip { display: none; }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 2vh 0; 
+            border-bottom: 1px solid var(--border);
+        }
+        .left-buttons { display: flex; gap: 1vw; }
+        .social-links { display: flex; gap: 1vw; }
+        .social-links a, .left-buttons a, .left-buttons button {
+            padding: 1vh;
+            background: var(--stats-item-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-color);
+            transition: background 0.3s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .social-links a:hover, .left-buttons a:hover, .left-buttons button:hover {
+            background: var(--accent);
+            transform: scale(1.05);
+        }
+        .onboarding, .dashboard, .readme { display: none; flex-direction: column; gap: 2vh; flex: 1; }
+        .onboarding.visible, .dashboard.visible, .readme.visible { display: flex; }
+        .sidebar {
+            width: 20vw;
+            min-width: 180px;
+            background: var(--stats-bg);
+            padding: 2vw;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5vh;
+            border-right: 1px solid var(--border);
+            height: 100%;
+        }
+        .sidebar h2 {
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+            margin-bottom: 2vh;
+            text-align: center;
+            text-shadow: 0 0 5px var(--shadow);
+            color: var(--text-color);
+        }
+        .sidebar button {
+            padding: 1vh 1vw;
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+            background: var(--stats-item-bg);
+            border: 1px solid var(--border);
+            color: var(--text-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 1vw;
+        }
+        .sidebar button:hover {
+            background: var(--accent);
+            transform: scale(1.05);
+        }
+        .sidebar button.active {
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--shadow);
+        }
+        .content-area { flex: 1; display: flex; flex-direction: row; height: 100%; }
+        .content {
+            flex: 1;
+            padding: 2vw;
+            display: none;
+            flex-direction: column;
+            gap: 2vh;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.1);
+        }
+        .content.visible { display: flex; }
+        h3 {
+            font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+            text-align: center;
+            text-shadow: 0 0 5px var(--shadow);
+            color: var(--text-color);
+        }
+        .input-group { display: flex; align-items: center; gap: 1vw; position: relative; width: 100%; }
+        input, textarea, select {
+            flex: 1;
+            padding: 1vh 1vw 1vh 5vw;
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+            border: 1px solid var(--border);
+            background: var(--stats-item-bg);
+            color: var(--text-color);
+            border-radius: 6px;
+            transition: border-color 0.3s;
+            font-family: 'Courier New', monospace;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+        .input-group .material-icons { color: var(--text-color); }
+        .input-group .prefix-icon { position: absolute; left: 1vw; top: 50%; transform: translateY(-50%); }
+        .input-group .copy-icon { position: absolute; left: 3vw; top: 50%; transform: translateY(-50%); cursor: pointer; transition: color 0.3s; }
+        .input-group .paste-icon { cursor: pointer; transition: color 0.3s; }
+        .copy-icon:hover, .paste-icon:hover { color: var(--accent); }
+        button {
+            padding: 1vh 2vw;
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+            background: var(--button-bg);
+            border: 1px solid var(--border);
+            color: var(--text-color);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: background 0.3s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5vw;
+            font-family: 'Courier New', monospace;
+        }
+        button:hover {
+            background: var(--button-hover);
+            transform: scale(1.05);
+        }
+        .button-group { display: flex; justify-content: center; gap: 1.5vw; flex-wrap: wrap; margin-top: 1.5vh; }
+        .log {
+            border: 1px solid var(--border);
+            height: 20vh;
+            min-height: 120px;
+            overflow-y: auto;
+            padding: 1vh;
+            font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+            background: var(--log-bg);
+            color: var(--log-text);
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        #status {
+            font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+            padding: 1vh;
+            text-align: left;
+            background: var(--stats-item-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            position: absolute;
+            bottom: 1vh;
+            left: 1vw;
+            color: var(--text-color);
+        }
+        .instructions {
+            font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+            padding: 1vh;
+            background: var(--stats-item-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: var(--text-color);
+        }
+        .key-display {
+            font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+            padding: 1vh;
+            background: var(--stats-item-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 1vw;
+            position: relative;
+            width: 100%;
+            font-family: 'Courier New', monospace;
+            color: var(--text-color);
+        }
+        .key-display .material-icons { position: absolute; left: 1vw; top: 50%; transform: translateY(-50%); color: var(--text-color); }
+        .key-display span { flex: 1; padding: 0 4vw; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; }
+        .key-display button { padding: 1vh; }
+        #walletInfo, #fractalStakeInfo, #nodeInfo {
+            font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+            padding: 1vh;
+            background: var(--stats-item-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            margin: 0.5vh 0;
+            word-wrap: break-word;
+            color: var(--text-color);
+        }
+        #burnDialog, #themeDialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--container-bg);
+            border: 2px solid var(--accent);
+            padding: 1.5vh;
+            color: var(--text-color);
+            border-radius: 6px;
+            z-index: 10;
+            box-shadow: 0 0 15px var(--shadow);
+            font-family: 'Courier New', monospace;
+            width: 90vw;
+            max-width: 400px;
+        }
+        #burnDialog input, #themeDialog select { border-color: var(--border); background: var(--stats-item-bg); color: var(--text-color); }
+        #burnDialog button, #themeDialog button { background: var(--accent); color: var(--text-color); border: none; }
+        #burnDialog button:hover, #themeDialog button:hover { background: var(--button-hover); transform: scale(1.05); }
+        #chatLog, #txLog, #blockLog, #nodeLog {
+            height: 40vh;
+            overflow-y: auto;
+            padding: 1vh;
+            background: var(--log-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        #chatLog .chat-post, #txLog .tx-item, #blockLog .block-item {
+            margin: 1vh 0;
+            padding: 1vh 1.5vw;
+            background: var(--stats-item-bg);
+            border-radius: 12px;
+            font-size: clamp(0.9rem, 1.2vw, 1rem);
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            transition: background 0.2s;
+            color: var(--text-color);
+        }
+        #chatLog .chat-post:hover, #txLog .tx-item:hover, #blockLog .block-item:hover { background: var(--accent); }
+        #chatLog .chat-header, #txLog .tx-header, #blockLog .block-header { display: flex; align-items: center; gap: 0.5vw; margin-bottom: 0.5vh; }
+        #chatLog .chat-username { font-weight: bold; }
+        #chatLog .chat-handle, #txLog .tx-time, #blockLog .block-time { color: var(--log-text); font-size: 0.9rem; }
+        #chatLog .chat-time { color: var(--log-text); font-size: 0.8rem; margin-left: auto; }
+        #chatLog .chat-message, #txLog .tx-details, #blockLog .block-details { word-wrap: break-word; overflow-wrap: break-word; }
+        #oksanaChatLog { height: 30vh; overflow-y: auto; }
+        #chatInput {
+            padding: 1vh 6vw 1vh 1vw;
+            resize: vertical;
+            min-height: 3em;
+            max-height: 6em;
+            line-height: 1.4;
+            background: var(--stats-item-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            color: var(--text-color);
+        }
+        #oksanaInput { padding: 1vh; resize: none; }
+        .color-picker, .username-picker { display: flex; align-items: center; gap: 0.5vw; margin-top: 1vh; }
+        .color-picker label, .username-picker label { font-size: clamp(0.8rem, 1.2vw, 0.9rem); color: var(--text-color); }
+        .color-picker input[type="color"] { width: 40px; height: 40px; border: none; background: none; cursor: pointer; }
+        .username-picker input[type="text"] { padding: 0.5vh 1vw; font-size: clamp(0.8rem, 1.2vw, 0.9rem); width: 150px; }
+        .readme-content {
+            padding: 2vw;
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+            background: var(--stats-item-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            overflow-y: auto;
+            flex: 1;
+            color: var(--text-color);
+        }
+        .footer {
+            font-size: clamp(0.8rem, 1.2vw, 0.9rem);
+            padding: 1vh;
+            text-align: center;
+            background: var(--stats-bg);
+            border-top: 1px solid var(--border);
+            border-radius: 0 0 8px 8px;
+            color: var(--log-text);
+            font-family: 'Courier New', monospace;
+        }
+        .chat-input-group { position: relative; align-items: flex-end; flex-direction: column; gap: 0.5vh; }
+        .chat-input-wrapper { position: relative; width: 100%; }
+        .send-chat-btn {
+            position: absolute;
+            bottom: 0.5vh;
+            right: 0.5vw;
+            padding: 0;
+            background: var(--accent);
+            border: none;
+            border-radius: 50%;
+            width: 2.5em;
+            height: 2.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .send-chat-btn:hover {
+            background: var(--button-hover);
+            transform: scale(1.1);
+        }
+        .send-chat-btn .material-icons { font-size: 1.2rem; }
+        .char-count { font-size: 0.8rem; color: var(--log-text); text-align: right; }
+        .twitter-header {
+            padding: 0.5vh 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1vh;
+        }
+        .twitter-header .username { font-size: 1.1rem; font-weight: bold; color: var(--text-color); }
+        .twitter-header .handle { font-size: 0.9rem; color: var(--log-text); }
+        #themeDialog h4 {
+            margin-bottom: 1vh;
+            text-align: center;
+            text-shadow: 0 0 5px var(--shadow);
+        }
+        .theme-options {
+            display: flex;
+            flex-direction: column;
+            gap: 1vh;
+        }
+        .theme-options button {
+            padding: 0.5vh 1vw;
+            background: var(--stats-item-bg);
+            border: 1px solid var(--border);
+            color: var(--text-color);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .theme-options button:hover {
+            background: var(--accent);
+            transform: scale(1.05);
+        }
+        .explorer-details { font-size: 0.9rem; margin-top: 0.5vh; padding-left: 1vw; }
+        .staking-options { display: flex; gap: 1vw; align-items: center; margin-top: 1vh; }
+        .staking-options label { color: var(--text-color); }
+        @media (max-width: 768px) {
+            .content-area { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); padding: 2vh; }
+            .sidebar button { justify-content: center; }
+            .container { padding: 0 3vw 3vw; }
+            .header { flex-direction: column; gap: 1vh; }
+            .left-buttons, .social-links { justify-content: center; width: 100%; }
+            .stats-strip { flex-wrap: wrap; gap: 1vh; padding: 1vh; }
+        }
+        @media (max-width: 480px) {
+            .input-group { flex-direction: column; align-items: stretch; }
+            .input-group .paste-icon { position: static; transform: none; margin: 1vh auto; }
+            .button-group { flex-direction: column; gap: 1vh; }
+            .sidebar { min-width: 100%; }
+            .social-links { flex-wrap: wrap; }
+            .username-picker input[type="text"] { width: 100%; }
+            .stats-strip { justify-content: center; }
+            .staking-options { flex-direction: column; }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/elliptic/6.5.4/elliptic.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
 </head>
 <body>
-    <canvas id="particleCanvas"></canvas>
-    <div class="hud">
-        <i class="material-icons">bar_chart</i>
-        <span>Balance: <span id="hudBalance">0.0000</span> KRY</span>
-        <span>Stake: <span id="hudFractalStake">0.0000</span> KRY</span>
-        <span>Mining Rate: <span id="hudMiningRate">0.0001 KRY/block</span></span>
-        <span>Height: <span id="hudHeight">0</span></span>
-        <span>Peers: <span id="hudPeerCount">0</span></span>
-    </div>
     <div class="container">
+        <div class="stats-strip">
+            <div class="stat-item">
+                <i class="material-icons">account_balance_wallet</i>
+                <span>B: <span id="balance">0</span> KRY</span>
+            </div>
+            <div class="stat-item">
+                <i class="material-icons">link</i>
+                <span>S: <span id="fractalStake">0</span> KRY</span>
+            </div>
+            <div class="stat-item">
+                <i class="material-icons">gavel</i>
+                <span>MR: <span id="miningRate">0</span> KRY/b</span>
+            </div>
+            <div class="stat-item">
+                <i class="material-icons">height</i>
+                <span>H: <span id="height">0</span></span>
+            </div>
+            <div class="stat-item">
+                <i class="material-icons">group</i>
+                <span>P: <span id="peerCount">0</span></span>
+            </div>
+            <div class="stat-item">
+                <i class="material-icons">timer</i>
+                <span>BT: <span id="avgBlockTime">N/A</span></span>
+            </div>
+        </div>
         <div class="header">
             <div class="left-buttons">
                 <button id="logoutBtn"><i class="material-icons">exit_to_app</i></button>
                 <button id="dashboardBtn"><i class="material-icons">dashboard</i></button>
                 <button id="infoBtn"><i class="material-icons">info</i></button>
+                <button id="themeBtn"><i class="material-icons">brush</i></button>
                 <a href="#" id="researchPaper"><i class="material-icons">description</i></a>
             </div>
             <div class="social-links">
@@ -333,9 +525,7 @@
         </div>
         <div class="onboarding visible" id="onboarding">
             <h3>KryoCoin Dashboard</h3>
-            <div class="instructions">Check wallet status
-Connect to network
-Start mining</div>
+            <div class="instructions">Check wallet status<br>Connect to network<br>Start mining</div>
             <div class="input-group">
                 <i class="material-icons prefix-icon">key</i>
                 <i class="material-icons copy-icon" id="copyWalletIdIcon">content_copy</i>
@@ -355,7 +545,7 @@ Start mining</div>
             <div class="key-display">
                 <i class="material-icons">key</i>
                 <span id="pubKeyDisplay">Your Public Key: Not set</span>
-                <button id="copyPubKeyBtn"><i class="material-icons">content_copy</i>Copy</button>
+                <button id="copyPubKeyBtn" disabled><i class="material-icons">content_copy</i>Copy</button>
             </div>
         </div>
         <div class="dashboard" id="dashboard">
@@ -366,6 +556,10 @@ Start mining</div>
                     <button id="mineBtn"><i class="material-icons">gavel</i>Mine</button>
                     <button id="stakingBtn"><i class="material-icons">link</i>Staking</button>
                     <button id="chatBtn"><i class="material-icons">chat</i>Chat</button>
+                    <button id="oksanaBtn"><i class="material-icons">android</i>Oksana (AI)</button>
+                    <button id="txExplorerBtn"><i class="material-icons">list_alt</i>Tx Explorer</button>
+                    <button id="blockExplorerBtn"><i class="material-icons">block</i>Block Explorer</button>
+                    <button id="nodeBtn"><i class="material-icons">router</i>Node</button>
                 </div>
                 <div id="sendReceiveScreen" class="content visible">
                     <h3>Send/Receive</h3>
@@ -382,6 +576,10 @@ Start mining</div>
                         <input type="number" id="amount" placeholder="Amount (KRY)" min="0" step="0.001">
                         <i class="material-icons paste-icon" id="pasteAmountIcon">content_paste</i>
                     </div>
+                    <div class="input-group">
+                        <i class="material-icons prefix-icon">toll</i>
+                        <input type="number" id="txFee" placeholder="Fee (KRY)" min="0" step="0.0001" value="0.0005">
+                    </div>
                     <div class="button-group">
                         <button id="sendTxBtn"><i class="material-icons">send</i>Send</button>
                     </div>
@@ -397,12 +595,21 @@ Start mining</div>
                 </div>
                 <div id="stakingScreen" class="content">
                     <h3>Staking</h3>
-                    <div id="fractalStakeInfo">Stake Details: <span id="stakeDetails">KryoCases Frozen: 0 | Unfroze: 0</span></div>
+                    <div id="fractalStakeInfo">Stake Details: <span id="stakeDetails">KryoCases Frozen: 0 | Unfroze: 0 | Bonus KRY: 0.0000 KRY</span></div>
                     <div class="input-group">
                         <i class="material-icons prefix-icon">trending_up</i>
                         <i class="material-icons copy-icon" id="copyStakeAmountIcon" style="display:none;">content_copy</i>
                         <input type="number" id="stakeAmount" placeholder="Stake Amount (KRY)" min="0" step="0.001">
                         <i class="material-icons paste-icon" id="pasteStakeAmountIcon">content_paste</i>
+                    </div>
+                    <div class="staking-options">
+                        <label>Lock Period:</label>
+                        <select id="stakePeriod">
+                            <option value="10">10 Blocks (~1 min)</option>
+                            <option value="100">100 Blocks (~10 min)</option>
+                            <option value="1000">1000 Blocks (~1.5 hr)</option>
+                        </select>
+                        <span id="rewardEstimate">Est. Reward: 0 KRY</span>
                     </div>
                     <div class="button-group">
                         <button id="stakeBtn"><i class="material-icons">link</i>Stake</button>
@@ -413,10 +620,17 @@ Start mining</div>
                 </div>
                 <div id="chatScreen" class="content">
                     <h3>Chat</h3>
+                    <div class="twitter-header">
+                        <span class="username" id="chatUsernameDisplay">Anonymous</span>
+                        <span class="handle" id="chatHandleDisplay">@anonymous</span>
+                    </div>
                     <div class="log" id="chatLog">Chat Messages:</div>
-                    <div class="input-group">
-                        <i class="material-icons prefix-icon">message</i>
-                        <textarea id="chatInput" placeholder="Type a message..." rows="2"></textarea>
+                    <div class="input-group chat-input-group">
+                        <div class="chat-input-wrapper">
+                            <textarea id="chatInput" placeholder="What's happening?" rows="3" maxlength="280"></textarea>
+                            <button id="sendChatBtn" class="send-chat-btn"><i class="material-icons">send</i></button>
+                        </div>
+                        <span class="char-count" id="charCount">0/280</span>
                     </div>
                     <div class="username-picker">
                         <label for="chatUsername">Username:</label>
@@ -426,45 +640,59 @@ Start mining</div>
                         <label for="chatColor">Chat Color:</label>
                         <input type="color" id="chatColor" value="#FFFFFF">
                     </div>
-                    <div class="button-group">
-                        <button id="sendChatBtn"><i class="material-icons">send</i>Send</button>
+                </div>
+                <div id="oksanaScreen" class="content">
+                    <h3>Oksana (AI)</h3>
+                    <div class="log" id="oksanaChatLog">Hi, I'm Oksana, your personal AI assistant. I'm still learning but here to help!</div>
+                    <div class="input-group">
+                        <i class="material-icons prefix-icon">android</i>
+                        <textarea id="oksanaInput" placeholder="      Type your message to Oksana..." rows="2"></textarea>
                     </div>
+                    <div class="button-group">
+                        <button id="sendOksanaBtn"><i class="material-icons">send</i>Send</button>
+                    </div>
+                </div>
+                <div id="txExplorerScreen" class="content">
+                    <h3>Transaction Explorer</h3>
+                    <div class="log" id="txLog">Transactions:</div>
+                </div>
+                <div id="blockExplorerScreen" class="content">
+                    <h3>Block Explorer</h3>
+                    <div class="log" id="blockLog">Blocks:</div>
+                </div>
+                <div id="nodeScreen" class="content">
+                    <h3>Node</h3>
+                    <div id="nodeInfo">Node Status: <span id="nodeStatus">Inactive</span></div>
+                    <div class="button-group">
+                        <button id="toggleNodeBtn"><i class="material-icons">power</i><span id="nodeToggleText">Start Node</span></button>
+                    </div>
+                    <div class="log" id="nodeLog">Node Events:</div>
                 </div>
             </div>
         </div>
         <div class="readme" id="readme">
             <h3>README</h3>
             <div class="readme-content">
-                <strong>Welcome to KryoCoin Dashboard</strong>
-
-                KryoCoin (KRY) is a decentralized cryptocurrency platform. This dashboard lets you:
-
-                - Create or log into a wallet
-
-                - Send and receive KRY
-
-                - Mine blocks for rewards
-
-                - Stake KRY with our Fractal Staking system
-
-                - Chat with peers
-
-                <strong>How to Start:</strong>
-
-                1. Enter a Wallet ID and passphrase (8+ chars) to log in, or create a new wallet.
-
-                2. Connect to the network and explore the features.
-
-                3. Back up your Wallet ID and passphrase—there’s no recovery if lost.
-
-                <strong>Notice:</strong>
-
-                This is an early version of KryoCoin. Bugs may occur, but they’ll be fixed in future updates. Thanks for trying it out!
-
-                <em>KryoCoin v1.0 | 'FTL' Architecture | © 2025</em>
+                <strong>Welcome to KryoCoin Dashboard</strong><br><br>
+                KryoCoin (KRY) is a decentralized cryptocurrency platform inspired by Bitcoin and Ethereum. Features:<br>
+                - Create or log into a wallet<br>
+                - Send and receive KRY with fees<br>
+                - Mine blocks for rewards<br>
+                - Stake KRY with customizable lock periods<br>
+                - Explore transactions and blocks<br>
+                - Chat with peers (280 chars, 0.001 KRY/post)<br>
+                - Talk to Oksana, our AI assistant<br>
+                - Run a node to support the network with STUN/TURN for connectivity<br><br>
+                <strong>How to Start:</strong><br>
+                1. Enter a Wallet ID and passphrase (8+ chars) to log in, or create a new wallet.<br>
+                2. Connect to the network and explore the features.<br>
+                3. Back up your Wallet ID and passphrase—no recovery if lost.<br><br>
+                <strong>Notice:</strong><br>
+                This is an early version. Report bugs for future fixes. Enjoy!<br><br>
+                <em>KryoCoin v1.1 | 'FTL' Architecture | © 2025</em>
             </div>
         </div>
-        <div id="status">[SYS] Initializing...</div>
+        <div id="status">[SYS] Set up wallet</div>
         <div id="burnDialog">
             <h3>Burn KRY</h3>
             <div class="input-group">
@@ -478,945 +706,1261 @@ Start mining</div>
                 <button id="cancelBurnBtn"><i class="material-icons">close</i>Cancel</button>
             </div>
         </div>
-        <div class="footer">KryoCoin v1.0 | 'FTL' Architecture | © 2025</div>
+        <div id="themeDialog">
+            <h4>Select Theme</h4>
+            <div class="theme-options">
+                <button id="themeOriginal">Original</button>
+                <button id="themeCelestial">Celestial</button>
+                <button id="themeDark">Dark Mode</button>
+                <button id="themeLight">Light Mode</button>
+            </div>
+        </div>
+        <div class="footer">KryoCoin v1.1 | 'FTL' Architecture | © 2025</div>
     </div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/elliptic/6.5.4/elliptic.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script>
-<script>
-    const dbPromise = new Promise((resolve, reject) => {
-        const request = indexedDB.open('KryoCoinDB', 2);
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve(request.result);
-        request.onupgradeneeded = event => {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains('wallet')) {
-                db.createObjectStore('wallet', { keyPath: 'id' });
-            }
-            if (!db.objectStoreNames.contains('blockchain')) {
-                db.createObjectStore('blockchain', { keyPath: 'id' });
-            }
-        };
-    });
-async function setItem(storeName, id, value) {
-    const db = await dbPromise;
-    return new Promise((resolve, reject) => {
-        const tx = db.transaction(storeName, 'readwrite');
-        const store = tx.objectStore(storeName);
-        store.put({ id, value });
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error);
-    });
-}
-
-async function getItem(storeName, id) {
-    const db = await dbPromise;
-    return new Promise((resolve, reject) => {
-        const tx = db.transaction(storeName, 'readonly');
-        const store = tx.objectStore(storeName);
-        const request = store.get(id);
-        request.onsuccess = () => resolve(request.result?.value);
-        request.onerror = () => reject(request.error);
-    });
-}
-
-const canvas = document.getElementById('particleCanvas');
-const ctx = canvas.getContext('2d');
-let particlesArray = [];
-
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
-class BackgroundParticle {
-    constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 1;
-        this.speedX = Math.random() * 1 - 0.5;
-        this.speedY = Math.random() * 1 - 0.5;
-    }
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.size > 0.2) this.size -= 0.01;
-        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-    }
-    draw() {
-        ctx.fillStyle = 'rgba(29, 161, 242, 0.5)';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-    }
-}
-
-function initParticles() {
-    particlesArray = [];
-    for (let i = 0; i < 100; i++) {
-        particlesArray.push(new BackgroundParticle());
-    }
-}
-initParticles();
-
-function animateAll() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < particlesArray.length; i++) {
-        particlesArray[i].update();
-        particlesArray[i].draw();
-        if (particlesArray[i].size <= 0.2) {
-            particlesArray.splice(i, 1);
-            i--;
-            particlesArray.push(new BackgroundParticle());
-        }
-    }
-    requestAnimationFrame(animateAll);
-}
-animateAll();
-
-class CryptoWallet {
-    constructor() {
-        this.ec = new elliptic.ec('secp256k1');
-        this.keyPair = null;
-        this.pubKey = null;
-        this.chatColor = '#FFFFFF';
-        this.chatUsername = 'Anonymous';
-        this.peers = {};
-        this.connectedPeers = new Set();
-        this.messageHistory = new Set();
-        this.lastAttempt = {};
-        this.MAX_PEERS = 20;
-        this.ATTEMPT_COOLDOWN = 5000;
-        this.BROADCAST_INTERVAL = 1000;
-        this.SYNC_INTERVAL = 2000;
-        this.onboardingChannel = new BroadcastChannel('kryocoin-onboarding');
-        this.networkChannel = null;
-        this.blockchain = new Blockchain(this);
-        this.currentScreen = 'sendReceive';
-        this.initialize();
-        this.bindEvents();
-        this.startPeerDiscovery();
-    }
-
-    async initialize() {
-        if (!window.isSecureContext) {
-            document.body.innerHTML = "<div>Requires HTTPS or localhost</div>";
-            return;
-        }
-        this.updateStatus("[SYS] Set up wallet");
-        if (!window.RTCPeerConnection) {
-            this.updateStatus("[ERR] WebRTC not supported");
-        }
-        setInterval(() => this.blockchain.syncWithPeers(), this.SYNC_INTERVAL);
-    }
-
-    bindEvents() {
-        document.getElementById('loginBtn').addEventListener('click', () => this.login());
-        document.getElementById('createWalletBtn').addEventListener('click', () => this.createWallet());
-        document.getElementById('sendReceiveBtn').addEventListener('click', () => this.showScreen('sendReceive'));
-        document.getElementById('mineBtn').addEventListener('click', () => this.showScreen('mine'));
-        document.getElementById('stakingBtn').addEventListener('click', () => this.showScreen('staking'));
-        document.getElementById('chatBtn').addEventListener('click', () => this.showScreen('chat'));
-        document.getElementById('sendTxBtn').addEventListener('click', () => this.sendTx());
-        document.getElementById('startMiningBtn').addEventListener('click', () => this.blockchain.startMining());
-        document.getElementById('stakeBtn').addEventListener('click', () => this.stakeFractal());
-        document.getElementById('thawBtn').addEventListener('click', () => this.thawFractal());
-        document.getElementById('burnBtn').addEventListener('click', () => this.showBurnDialog());
-        document.getElementById('confirmBurnBtn').addEventListener('click', () => this.burnKRY());
-        document.getElementById('cancelBurnBtn').addEventListener('click', () => this.hideBurnDialog());
-        document.getElementById('sendChatBtn').addEventListener('click', () => this.sendChatMessage());
-        document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
-        document.getElementById('dashboardBtn').addEventListener('click', () => this.showDashboard());
-        document.getElementById('infoBtn').addEventListener('click', () => this.toggleReadme());
-        document.getElementById('copyWalletIdIcon').addEventListener('click', () => this.copyText(document.getElementById('walletId').value, "Wallet ID"));
-        document.getElementById('pasteWalletIdIcon').addEventListener('click', () => this.pasteText('walletId', "Wallet ID"));
-        document.getElementById('copyPubKeyBtn').addEventListener('click', () => this.copyText(this.pubKey, "Public key"));
-        document.getElementById('copyRecipientIcon').addEventListener('click', () => this.copyText(document.getElementById('recipient').value, "Recipient Pubkey"));
-        document.getElementById('pasteRecipientIcon').addEventListener('click', () => this.pasteText('recipient', "Recipient Pubkey"));
-    }
-
-    showScreen(screen) {
-        const screens = ['sendReceive', 'mine', 'staking', 'chat'];
-        screens.forEach(s => {
-            const element = document.getElementById(`${s}Screen`);
-            const button = document.getElementById(`${s}Btn`);
-            if (s === screen) {
-                element.classList.add('visible');
-                button.classList.add('active');
-            } else {
-                element.classList.remove('visible');
-                button.classList.remove('active');
-            }
+    <script>
+        const dbPromise = new Promise((resolve, reject) => {
+            const request = indexedDB.open('KryoCoinDB', 2);
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => resolve(request.result);
+            request.onupgradeneeded = event => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('wallet')) {
+                    db.createObjectStore('wallet', { keyPath: 'id' });
+                }
+                if (!db.objectStoreNames.contains('blockchain')) {
+                    db.createObjectStore('blockchain', { keyPath: 'id' });
+                }
+            };
         });
-        this.currentScreen = screen;
-        this.blockchain.updateUI();
-    }
-
-    async sha256(str) {
-        const buffer = new TextEncoder().encode(str);
-        const hash = await crypto.subtle.digest('SHA-256', buffer);
-        return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    async deriveKey(passphrase) {
-        return CryptoJS.PBKDF2(passphrase, "salt", { keySize: 256 / 32, iterations: 500 }).toString(CryptoJS.enc.Hex);
-    }
-
-    async login() {
-        try {
-            const walletId = document.getElementById("walletId").value.trim();
-            const passphrase = document.getElementById("passphrase").value;
-            if (!walletId || passphrase.length < 8) throw new Error("Invalid credentials");
-            const storedKey = await getItem('wallet', `key_${walletId}`);
-            if (!storedKey) throw new Error("Wallet not found");
-            const encryptionKey = await this.deriveKey(passphrase);
-            const decryptedKey = CryptoJS.AES.decrypt(storedKey, encryptionKey).toString(CryptoJS.enc.Utf8);
-            this.keyPair = this.ec.keyFromPrivate(decryptedKey, 'hex');
-            if (this.keyPair.getPublic('hex') !== walletId) throw new Error("Invalid passphrase");
-            this.pubKey = walletId;
-            await this.blockchain.loadChain();
-            this.joinMainNetwork();
-            this.updatePubKeyDisplay();
-            document.getElementById('onboarding').classList.remove('visible');
-            document.getElementById('dashboard').classList.add('visible');
-            this.showScreen('sendReceive');
-            this.updateStatus(`[SYS] Logged in. Connecting to network...`);
-        } catch (e) {
-            this.updateStatus(`[ERR] Login failed: ${e.message}`);
+        async function setItem(storeName, id, value) {
+            const db = await dbPromise;
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                store.put({ id, value });
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
         }
-    }
-
-    async createWallet() {
-        try {
-            const passphrase = document.getElementById("passphrase").value;
-            if (passphrase.length < 8) throw new Error("Passphrase too short");
-            this.keyPair = this.ec.genKeyPair();
-            this.pubKey = this.keyPair.getPublic('hex');
-            const encryptionKey = await this.deriveKey(passphrase);
-            const encryptedKey = CryptoJS.AES.encrypt(this.keyPair.getPrivate('hex'), encryptionKey).toString();
-            await setItem('wallet', `key_${this.pubKey}`, encryptedKey);
-            this.blockchain.initializeWallet();
-            await this.blockchain.saveState();
-            this.joinMainNetwork();
-            document.getElementById("walletId").value = this.pubKey;
-            this.updatePubKeyDisplay();
-            document.getElementById('onboarding').classList.remove('visible');
-            document.getElementById('dashboard').classList.add('visible');
-            this.showScreen('sendReceive');
-            this.updateStatus(`[SYS] Wallet created. Connecting to network...`);
-        } catch (e) {
-            this.updateStatus(`[ERR] Creation failed: ${e.message}`);
+        async function getItem(storeName, id) {
+            const db = await dbPromise;
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const request = store.get(id);
+                request.onsuccess = () => resolve(request.result?.value);
+                request.onerror = () => reject(request.error);
+            });
         }
-    }
-
-    logout() {
-        this.keyPair = null;
-        this.pubKey = null;
-        this.peers = {};
-        this.connectedPeers.clear();
-        if (this.networkChannel) this.networkChannel.close();
-        this.networkChannel = null;
-        this.onboardingChannel = new BroadcastChannel('kryocoin-onboarding');
-        document.getElementById('dashboard').classList.remove('visible');
-        document.getElementById('readme').classList.remove('visible');
-        document.getElementById('onboarding').classList.add('visible');
-        this.updateStatus('[SYS] Logged out');
-        this.blockchain.updateUI();
-    }
-
-    showDashboard() {
-        document.getElementById('readme').classList.remove('visible');
-        document.getElementById('dashboard').classList.add('visible');
-        this.showScreen('sendReceive');
-    }
-
-    toggleReadme() {
-        const readme = document.getElementById('readme');
-        const dashboard = document.getElementById('dashboard');
-        const onboarding = document.getElementById('onboarding');
-        if (readme.classList.contains('visible')) {
-            readme.classList.remove('visible');
-            if (this.pubKey) dashboard.classList.add('visible');
-            else onboarding.classList.add('visible');
-        } else {
-            readme.classList.add('visible');
-            dashboard.classList.remove('visible');
-            onboarding.classList.remove('visible');
-        }
-    }
-
-    copyText(text, label) {
-        if (!text) {
-            this.updateStatus(`[ERR] No ${label.toLowerCase()} to copy`);
-            return;
-        }
-        navigator.clipboard.writeText(text)
-            .then(() => this.updateStatus(`[SYS] ${label} copied`))
-            .catch(e => this.updateStatus(`[ERR] Copy failed: ${e.message}`));
-    }
-
-    async pasteText(elementId, label) {
-        try {
-            const text = await navigator.clipboard.readText();
-            document.getElementById(elementId).value = text;
-            this.updateStatus(`[SYS] ${label} pasted`);
-        } catch (e) {
-            this.updateStatus(`[ERR] Paste failed: ${e.message}`);
-        }
-    }
-
-    createPeerConnection(peerId, isInitiator = false) {
-        const pc = new RTCPeerConnection({
-            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
-        });
-        const channel = pc.createDataChannel(`kryocoin-${peerId.slice(0, 8)}`);
-        pc.onicecandidate = event => event.candidate && this.networkChannel.postMessage({
-            type: 'candidate',
-            candidate: event.candidate.toJSON(),
-            from: this.pubKey,
-            to: peerId
-        });
-        pc.ondatachannel = event => this.setupDataChannel(event.channel, peerId);
-        pc.onconnectionstatechange = () => {
-            if (pc.connectionState === 'connected') {
-                this.connectedPeers.add(peerId);
-                this.peers[peerId] = { pc, channel };
-                this.updateStatus(`[SYS] Connected to ${peerId.slice(0, 8)}`);
-                this.blockchain.requestStateSync(channel);
+        class CryptoWallet {
+            constructor() {
+                this.ec = new elliptic.ec('secp256k1');
+                this.keyPair = null;
+                this.pubKey = null;
+                this.chatColor = '#FFFFFF';
+                this.chatUsername = 'Anonymous';
+                this.peers = {};
+                this.connectedPeers = new Set();
+                this.knownNodes = new Set();
+                this.messageHistory = new Set();
+                this.relayHistory = new Set();
+                this.lastAttempt = {};
+                this.lastRelay = {};
+                this.MAX_PEERS = 20;
+                this.MAX_NODES = 10;
+                this.ATTEMPT_COOLDOWN = 15000;
+                this.RELAY_COOLDOWN = 5000;
+                this.BROADCAST_INTERVAL = 30000;
+                this.SYNC_INTERVAL = 30000;
+                this.isNodeActive = false;
+                this.onboardingChannel = new BroadcastChannel('kryocoin-onboarding');
+                this.networkChannel = null;
+                this.blockchain = new Blockchain(this);
+                this.currentScreen = 'sendReceive';
+                this.CHAT_POST_COST = 0.001;
+                this.initialize();
+                this.bindEvents();
+                this.loadChatSettings();
+                this.loadTheme();
+                this.startPeerDiscovery();
+            }
+            async initialize() {
+                if (!window.isSecureContext) {
+                    document.body.innerHTML = "<div>Requires HTTPS or localhost</div>";
+                    return;
+                }
+                this.updateStatus("[SYS] Set up wallet");
+                if (!window.RTCPeerConnection) {
+                    this.updateStatus("[ERR] WebRTC not supported");
+                }
+                setInterval(() => this.blockchain.syncWithPeers(), this.SYNC_INTERVAL);
+            }
+            bindEvents() {
+                const addEventListeners = (element, handler) => {
+                    element.addEventListener('click', handler);
+                    element.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        handler();
+                    });
+                };
+                addEventListeners(document.getElementById('loginBtn'), () => this.login());
+                addEventListeners(document.getElementById('createWalletBtn'), () => this.createWallet());
+                addEventListeners(document.getElementById('copyWalletIdIcon'), () => this.copyText(document.getElementById('walletId').value, "Wallet ID"));
+                addEventListeners(document.getElementById('pasteWalletIdIcon'), () => this.pasteText('walletId', "Wallet ID"));
+                addEventListeners(document.getElementById('copyPubKeyBtn'), () => this.copyText(this.pubKey, "Public key"));
+                addEventListeners(document.getElementById('sendReceiveBtn'), () => this.showScreen('sendReceive'));
+                addEventListeners(document.getElementById('mineBtn'), () => this.showScreen('mine'));
+                addEventListeners(document.getElementById('stakingBtn'), () => this.showScreen('staking'));
+                addEventListeners(document.getElementById('chatBtn'), () => this.showScreen('chat'));
+                addEventListeners(document.getElementById('oksanaBtn'), () => this.showScreen('oksana'));
+                addEventListeners(document.getElementById('txExplorerBtn'), () => this.showScreen('txExplorer'));
+                addEventListeners(document.getElementById('blockExplorerBtn'), () => this.showScreen('blockExplorer'));
+                addEventListeners(document.getElementById('nodeBtn'), () => this.showScreen('node'));
+                addEventListeners(document.getElementById('copyRecipientIcon'), () => this.copyText(document.getElementById('recipient').value, "Recipient Pubkey"));
+                addEventListeners(document.getElementById('pasteRecipientIcon'), () => this.pasteText('recipient', "Recipient Pubkey"));
+                addEventListeners(document.getElementById('sendTxBtn'), () => this.sendTx());
+                addEventListeners(document.getElementById('startMiningBtn'), () => this.blockchain.startMining());
+                addEventListeners(document.getElementById('stakeBtn'), () => this.stakeFractal());
+                addEventListeners(document.getElementById('thawBtn'), () => this.thawFractal());
+                addEventListeners(document.getElementById('burnBtn'), () => this.showBurnDialog());
+                addEventListeners(document.getElementById('confirmBurnBtn'), () => this.burnKRY());
+                addEventListeners(document.getElementById('cancelBurnBtn'), () => this.hideBurnDialog());
+                addEventListeners(document.getElementById('sendChatBtn'), () => this.sendChatMessage());
+                addEventListeners(document.getElementById('toggleNodeBtn'), () => this.toggleNode());
+                document.getElementById('chatInput').addEventListener('keypress', e => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendChatMessage();
+                    }
+                });
+                document.getElementById('chatInput').addEventListener('input', () => {
+                    const length = document.getElementById('chatInput').value.length;
+                    document.getElementById('charCount').textContent = `${length}/280`;
+                });
+                addEventListeners(document.getElementById('sendOksanaBtn'), () => this.sendOksanaMessage());
+                document.getElementById('oksanaInput').addEventListener('keypress', e => e.key === 'Enter' && this.sendOksanaMessage());
+                addEventListeners(document.getElementById('logoutBtn'), () => this.logout());
+                addEventListeners(document.getElementById('dashboardBtn'), () => this.showDashboard());
+                addEventListeners(document.getElementById('infoBtn'), () => this.toggleReadme());
+                addEventListeners(document.getElementById('themeBtn'), () => this.showThemeDialog());
+                addEventListeners(document.getElementById('themeOriginal'), () => this.setTheme('original'));
+                addEventListeners(document.getElementById('themeCelestial'), () => this.setTheme('celestial'));
+                addEventListeners(document.getElementById('themeDark'), () => this.setTheme('dark'));
+                addEventListeners(document.getElementById('themeLight'), () => this.setTheme('light'));
+                document.getElementById('chatColor').addEventListener('change', e => this.setChatColor(e.target.value));
+                document.getElementById('chatUsername').addEventListener('change', e => this.setChatUsername(e.target.value));
+                document.getElementById('stakePeriod').addEventListener('change', () => this.updateStakeRewardEstimate());
+            }
+            showScreen(screen) {
+                const screens = ['sendReceive', 'mine', 'staking', 'chat', 'oksana', 'txExplorer', 'blockExplorer', 'node'];
+                screens.forEach(s => {
+                    const element = document.getElementById(`${s}Screen`);
+                    const button = document.getElementById(`${s}Btn`);
+                    if (s === screen) {
+                        element.classList.add('visible');
+                        button.classList.add('active');
+                    } else {
+                        element.classList.remove('visible');
+                        button.classList.remove('active');
+                    }
+                });
+                this.currentScreen = screen;
+                this.blockchain.updateUI();
+                if (screen === 'chat') {
+                    this.updateChatHeader();
+                    this.blockchain.loadChatHistory();
+                } else if (screen === 'txExplorer') {
+                    this.blockchain.loadTxHistory();
+                } else if (screen === 'blockExplorer') {
+                    this.blockchain.loadBlockHistory();
+                } else if (screen === 'staking') {
+                    this.updateStakeRewardEstimate();
+                } else if (screen === 'node') {
+                    this.updateNodeUI();
+                }
+            }
+            async sha256(str) {
+                const buffer = new TextEncoder().encode(str);
+                const hash = await crypto.subtle.digest('SHA-256', buffer);
+                return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+            async deriveKey(passphrase) {
+                return CryptoJS.PBKDF2(passphrase, "salt", { keySize: 256 / 32, iterations: 500 }).toString(CryptoJS.enc.Hex);
+            }
+            async login() {
+                try {
+                    const walletId = document.getElementById("walletId").value.trim();
+                    const passphrase = document.getElementById("passphrase").value;
+                    if (!walletId || passphrase.length < 8) throw new Error("Invalid credentials");
+                    const storedKey = await getItem('wallet', `key_${walletId}`);
+                    if (!storedKey) throw new Error("Wallet not found");
+                    const encryptionKey = await this.deriveKey(passphrase);
+                    const decryptedKey = CryptoJS.AES.decrypt(storedKey, encryptionKey).toString(CryptoJS.enc.Utf8);
+                    this.keyPair = this.ec.keyFromPrivate(decryptedKey, 'hex');
+                    if (this.keyPair.getPublic('hex') !== walletId) throw new Error("Invalid passphrase");
+                    this.pubKey = walletId;
+                    await this.blockchain.loadChain();
+                    this.joinMainNetwork();
+                    this.updatePubKeyDisplay();
+                    document.getElementById('copyPubKeyBtn').disabled = false;
+                    document.getElementById('onboarding').classList.remove('visible');
+                    document.getElementById('dashboard').classList.add('visible');
+                    this.showScreen('sendReceive');
+                    this.updateStatus(`[SYS] Logged in. Connecting to network...`);
+                    this.loadChatSettings();
+                } catch (e) {
+                    this.updateStatus(`[ERR] Login failed: ${e.message}`);
+                }
+            }
+            async createWallet() {
+                try {
+                    const passphrase = document.getElementById("passphrase").value;
+                    if (passphrase.length < 8) throw new Error("Passphrase too short");
+                    this.keyPair = this.ec.genKeyPair();
+                    this.pubKey = this.keyPair.getPublic('hex');
+                    const encryptionKey = await this.deriveKey(passphrase);
+                    const encryptedKey = CryptoJS.AES.encrypt(this.keyPair.getPrivate('hex'), encryptionKey).toString();
+                    await setItem('wallet', `key_${this.pubKey}`, encryptedKey);
+                    this.blockchain.initializeWallet();
+                    await this.blockchain.saveState();
+                    this.joinMainNetwork();
+                    document.getElementById("walletId").value = this.pubKey;
+                    this.updatePubKeyDisplay();
+                    document.getElementById('copyPubKeyBtn').disabled = false;
+                    document.getElementById('onboarding').classList.remove('visible');
+                    document.getElementById('dashboard').classList.add('visible');
+                    this.showScreen('sendReceive');
+                    this.updateStatus(`[SYS] Wallet created. Connecting to network...`);
+                    this.loadChatSettings();
+                } catch (e) {
+                    this.updateStatus(`[ERR] Creation failed: ${e.message}`);
+                }
+            }
+            logout() {
+                this.stopNode();
+                this.keyPair = null;
+                this.pubKey = null;
+                this.chatUsername = 'Anonymous';
+                this.chatColor = '#FFFFFF';
+                this.peers = {};
+                this.connectedPeers.clear();
+                this.knownNodes.clear();
+                this.messageHistory.clear();
+                this.relayHistory.clear();
+                if (this.networkChannel) this.networkChannel.close();
+                this.networkChannel = null;
+                this.onboardingChannel = new BroadcastChannel('kryocoin-onboarding');
+                document.getElementById('dashboard').classList.remove('visible');
+                document.getElementById('readme').classList.remove('visible');
+                document.getElementById('onboarding').classList.add('visible');
+                document.getElementById('walletId').value = '';
+                document.getElementById('passphrase').value = '';
+                document.getElementById('chatUsername').value = '';
+                document.getElementById('chatColor').value = '#FFFFFF';
+                document.getElementById('chatLog').innerHTML = 'Chat Messages:';
+                this.updatePubKeyDisplay();
+                this.updateStatus('[SYS] Logged out');
                 this.blockchain.updateUI();
             }
-        };
-        if (isInitiator) {
-            pc.createOffer()
-                .then(offer => pc.setLocalDescription(offer))
-                .then(() => this.networkChannel.postMessage({
-                    type: 'offer',
-                    offer: { type: pc.localDescription.type, sdp: pc.localDescription.sdp },
+            showDashboard() {
+                document.getElementById('readme').classList.remove('visible');
+                document.getElementById('dashboard').classList.add('visible');
+                this.showScreen('sendReceive');
+            }
+            toggleReadme() {
+                const readme = document.getElementById('readme');
+                const dashboard = document.getElementById('dashboard');
+                const onboarding = document.getElementById('onboarding');
+                if (readme.classList.contains('visible')) {
+                    readme.classList.remove('visible');
+                    if (this.pubKey) dashboard.classList.add('visible');
+                    else onboarding.classList.add('visible');
+                } else {
+                    readme.classList.add('visible');
+                    dashboard.classList.remove('visible');
+                    onboarding.classList.remove('visible');
+                }
+            }
+            showThemeDialog() {
+                document.getElementById('themeDialog').style.display = 'block';
+            }
+            hideThemeDialog() {
+                document.getElementById('themeDialog').style.display = 'none';
+            }
+            async setTheme(theme) {
+                const root = document.documentElement;
+                document.body.classList.remove('celestial', 'dark', 'light');
+                if (theme === 'celestial') document.body.classList.add('celestial');
+                else if (theme === 'dark') document.body.classList.add('dark');
+                else if (theme === 'light') document.body.classList.add('light');
+                const themes = {
+                    'original': {
+                        '--bg': 'var(--original-bg)',
+                        '--container-bg': 'var(--original-container-bg)',
+                        '--stats-bg': 'var(--original-stats-bg)',
+                        '--stats-item-bg': 'var(--original-stats-item-bg)',
+                        '--text-color': 'var(--original-text-color)',
+                        '--accent': 'var(--original-accent)',
+                        '--border': 'var(--original-border)',
+                        '--shadow': 'var(--original-shadow)',
+                        '--log-bg': 'var(--original-log-bg)',
+                        '--log-text': 'var(--original-log-text)',
+                        '--button-bg': 'var(--original-button-bg)',
+                        '--button-hover': 'var(--original-button-hover)'
+                    },
+                    'celestial': {
+                        '--bg': 'var(--celestial-bg)',
+                        '--container-bg': 'var(--celestial-container-bg)',
+                        '--stats-bg': 'var(--celestial-stats-bg)',
+                        '--stats-item-bg': 'var(--celestial-stats-item-bg)',
+                        '--text-color': 'var(--celestial-text-color)',
+                        '--accent': 'var(--celestial-accent)',
+                        '--border': 'var(--celestial-border)',
+                        '--shadow': 'var(--celestial-shadow)',
+                        '--log-bg': 'var(--celestial-log-bg)',
+                        '--log-text': 'var(--celestial-log-text)',
+                        '--button-bg': 'var(--celestial-button-bg)',
+                        '--button-hover': 'var(--celestial-button-hover)'
+                    },
+                    'dark': {
+                        '--bg': 'var(--dark-bg)',
+                        '--container-bg': 'var(--dark-container-bg)',
+                        '--stats-bg': 'var(--dark-stats-bg)',
+                        '--stats-item-bg': 'var(--dark-stats-item-bg)',
+                        '--text-color': 'var(--dark-text-color)',
+                        '--accent': 'var(--dark-accent)',
+                        '--border': 'var(--dark-border)',
+                        '--shadow': 'var(--dark-shadow)',
+                        '--log-bg': 'var(--dark-log-bg)',
+                        '--log-text': 'var(--dark-log-text)',
+                        '--button-bg': 'var(--dark-button-bg)',
+                        '--button-hover': 'var(--dark-button-hover)'
+                    },
+                    'light': {
+                        '--bg': 'var(--light-bg)',
+                        '--container-bg': 'var(--light-container-bg)',
+                        '--stats-bg': 'var(--light-stats-bg)',
+                        '--stats-item-bg': 'var(--light-stats-item-bg)',
+                        '--text-color': 'var(--light-text-color)',
+                        '--accent': 'var(--light-accent)',
+                        '--border': 'var(--light-border)',
+                        '--shadow': 'var(--light-shadow)',
+                        '--log-bg': 'var(--light-log-bg)',
+                        '--log-text': 'var(--light-log-text)',
+                        '--button-bg': 'var(--light-button-bg)',
+                        '--button-hover': 'var(--light-button-hover)'
+                    }
+                };
+                Object.entries(themes[theme]).forEach(([key, value]) => root.style.setProperty(key, value));
+                await setItem('wallet', 'theme', theme);
+                this.hideThemeDialog();
+                this.updateStatus(`[SYS] Theme set to ${theme}`);
+            }
+            async loadTheme() {
+                const savedTheme = await getItem('wallet', 'theme') || 'original';
+                this.setTheme(savedTheme);
+            }
+            copyText(text, label) {
+                if (!text) {
+                    this.updateStatus(`[ERR] No ${label.toLowerCase()} to copy`);
+                    return;
+                }
+                navigator.clipboard.writeText(text)
+                    .then(() => this.updateStatus(`[SYS] ${label} copied`))
+                    .catch(e => this.updateStatus(`[ERR] Copy failed: ${e.message}`));
+            }
+            async pasteText(elementId, label) {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    document.getElementById(elementId).value = text;
+                    this.updateStatus(`[SYS] ${label} pasted`);
+                } catch (e) {
+                    this.updateStatus(`[ERR] Paste failed: ${e.message}`);
+                }
+            }
+            async loadChatSettings() {
+                const savedColor = await getItem('wallet', `chatColor_${this.pubKey}`);
+                if (savedColor) {
+                    this.chatColor = savedColor;
+                    document.getElementById('chatColor').value = savedColor;
+                }
+                const savedUsername = await getItem('wallet', `chatUsername_${this.pubKey}`);
+                if (savedUsername) {
+                    this.chatUsername = savedUsername;
+                    document.getElementById('chatUsername').value = savedUsername;
+                    this.updateChatHeader();
+                }
+            }
+            async setChatColor(color) {
+                this.chatColor = color;
+                await setItem('wallet', `chatColor_${this.pubKey}`, color);
+                this.updateStatus('[SYS] Chat color updated');
+            }
+            async setChatUsername(username) {
+                const trimmedUsername = username.trim();
+                if (!trimmedUsername || trimmedUsername.length > 20) {
+                    this.updateStatus('[ERR] Username must be 1-20 characters');
+                    return;
+                }
+                this.chatUsername = trimmedUsername;
+                await setItem('wallet', `chatUsername_${this.pubKey}`, trimmedUsername);
+                this.updateStatus('[SYS] Chat username updated');
+                this.updateChatHeader();
+            }
+            updateChatHeader() {
+                document.getElementById('chatUsernameDisplay').textContent = this.chatUsername;
+                document.getElementById('chatHandleDisplay').textContent = `@${this.chatUsername.toLowerCase()}`;
+            }
+            createPeerConnection(peerId, isInitiator = false) {
+                const pc = new RTCPeerConnection({
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        {
+                            urls: 'turn:openrelay.metered.ca:80',
+                            username: 'openrelayproject',
+                            credential: 'openrelayproject'
+                        }
+                    ]
+                });
+                const channel = pc.createDataChannel(`kryocoin-${peerId.slice(0, 8)}`);
+                pc.onicecandidate = event => event.candidate && this.networkChannel.postMessage({
+                    type: 'candidate',
+                    candidate: event.candidate.toJSON(),
                     from: this.pubKey,
                     to: peerId
-                }));
-        }
-        this.peers[peerId] = { pc, channel };
-        this.setupDataChannel(channel, peerId);
-        return pc;
-    }
-
-    setupDataChannel(channel, peerId) {
-        channel.onopen = () => {
-            this.peers[peerId].channel = channel;
-            this.blockchain.requestStateSync(channel);
-        };
-        channel.onmessage = event => this.onMessage(event.data, peerId);
-    }
-
-    attemptConnection(peerId, isInitiator = true) {
-        if (this.connectedPeers.size >= this.MAX_PEERS || this.peers[peerId] || peerId === this.pubKey) return;
-        const now = Date.now();
-        if (this.lastAttempt[peerId] && now - this.lastAttempt[peerId] < this.ATTEMPT_COOLDOWN) return;
-        this.lastAttempt[peerId] = now;
-        this.createPeerConnection(peerId, isInitiator);
-    }
-
-    joinMainNetwork() {
-        if (this.networkChannel) return;
-        this.onboardingChannel.close();
-        this.networkChannel = new BroadcastChannel('kryocoin-network');
-        this.networkChannel.onmessage = async event => {
-            const { type, from, to, offer, answer, candidate } = event.data;
-            if (from === this.pubKey) return;
-            if (type === 'announce') this.attemptConnection(from);
-            else if (type === 'offer' && to === this.pubKey) {
-                const pc = this.createPeerConnection(from, false);
-                await pc.setRemoteDescription(new RTCSessionDescription(offer));
-                const answer = await pc.createAnswer();
-                await pc.setLocalDescription(answer);
-                this.networkChannel.postMessage({
-                    type: 'answer',
-                    answer: { type: answer.type, sdp: answer.sdp },
-                    from: this.pubKey,
-                    to: from
                 });
-            } else if (type === 'answer' && to === this.pubKey) {
-                await this.peers[from].pc.setRemoteDescription(new RTCSessionDescription(answer));
-            } else if (type === 'candidate' && to === this.pubKey && this.peers[from]) {
-                await this.peers[from].pc.addIceCandidate(new RTCIceCandidate(candidate));
-            }
-        };
-    }
-
-    startPeerDiscovery() {
-        setInterval(() => {
-            if (this.networkChannel && this.pubKey) {
-                this.networkChannel.postMessage({ type: 'announce', from: this.pubKey });
-            }
-        }, this.BROADCAST_INTERVAL);
-    }
-
-    async onMessage(data, fromPeerPubkey) {
-        const msg = JSON.parse(data);
-        if (msg.pubKey === this.pubKey) return;
-        switch (msg.type) {
-            case 'transaction':
-                this.updateStatus(`[SYS] Received transaction from ${fromPeerPubkey.slice(0, 8)}`);
-                await this.blockchain.receiveTransaction(msg.data);
-                this.relayMessage(msg, fromPeerPubkey);
-                break;
-            case 'block':
-                this.updateStatus(`[SYS] Received block from ${fromPeerPubkey.slice(0, 8)}`);
-                await this.blockchain.receiveBlock(msg.data, fromPeerPubkey);
-                this.relayMessage(msg, fromPeerPubkey);
-                break;
-            case 'state_request':
-                this.updateStatus(`[SYS] State requested by ${fromPeerPubkey.slice(0, 8)}`);
-                if (this.peers[fromPeerPubkey]?.channel?.readyState === 'open') {
-                    this.peers[fromPeerPubkey].channel.send(JSON.stringify({
-                        type: 'state',
-                        data: {
-                            chain: [this.blockchain.longestChain.block],
-                            utxos: this.blockchain.longestChain.utxos,
-                            fractalStakes: this.blockchain.longestChain.fractalStakes,
-                            stats: this.blockchain.longestChain.stats
-                        },
-                        pubKey: this.pubKey
-                    }));
+                pc.ondatachannel = event => this.setupDataChannel(event.channel, peerId);
+                pc.onconnectionstatechange = () => {
+                    if (pc.connectionState === 'connected') {
+                        this.connectedPeers.add(peerId);
+                        this.peers[peerId] = { pc, channel };
+                        this.updateStatus(`[SYS] Connected to ${peerId.slice(0, 8)}`);
+                        this.appendToNodeLog(`Connected to peer ${peerId.slice(0, 8)}`);
+                        this.blockchain.requestStateSync(channel);
+                        this.blockchain.updateUI();
+                    } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+                        this.connectedPeers.delete(peerId);
+                        delete this.peers[peerId];
+                        this.appendToNodeLog(`Disconnected from peer ${peerId.slice(0, 8)}`);
+                        this.blockchain.updateUI();
+                    }
+                };
+                if (isInitiator) {
+                    pc.createOffer()
+                        .then(offer => pc.setLocalDescription(offer))
+                        .then(() => this.networkChannel.postMessage({
+                            type: 'offer',
+                            offer: { type: pc.localDescription.type, sdp: pc.localDescription.sdp },
+                            from: this.pubKey,
+                            to: peerId
+                        }));
                 }
-                break;
-            case 'state':
-                this.updateStatus(`[SYS] Received state from ${fromPeerPubkey.slice(0, 8)}`);
-                await this.blockchain.syncState(msg.data);
-                break;
-            case 'chat':
-                if (!this.messageHistory.has(msg.data.messageId)) {
-                    this.updateStatus(`[SYS] Received chat from ${fromPeerPubkey.slice(0, 8)}`);
-                    this.displayChatMessage(msg.data, fromPeerPubkey);
-                    this.relayMessage(msg, fromPeerPubkey);
+                this.peers[peerId] = { pc, channel };
+                this.setupDataChannel(channel, peerId);
+                return pc;
+            }
+            setupDataChannel(channel, peerId) {
+                channel.onopen = () => {
+                    this.peers[peerId].channel = channel;
+                    this.blockchain.requestStateSync(channel);
+                };
+                channel.onmessage = event => this.onMessage(event.data, peerId);
+            }
+            attemptConnection(peerId, isInitiator = true) {
+                if (this.connectedPeers.size >= this.MAX_PEERS || this.peers[peerId] || peerId === this.pubKey) return;
+                const now = Date.now();
+                if (this.lastAttempt[peerId] && now - this.lastAttempt[peerId] < this.ATTEMPT_COOLDOWN) return;
+                this.lastAttempt[peerId] = now;
+                this.createPeerConnection(peerId, isInitiator);
+                this.appendToNodeLog(`Attempting connection to ${peerId.slice(0, 8)}`);
+            }
+            joinMainNetwork() {
+                if (this.networkChannel) return;
+                this.onboardingChannel.close();
+                this.networkChannel = new BroadcastChannel('kryocoin-network');
+                this.networkChannel.onmessage = async event => {
+                    const { type, from, to, offer, answer, candidate, isNode } = event.data;
+                    if (from === this.pubKey) return;
+                    if (type === 'node_announce') {
+                        if (this.knownNodes.size < this.MAX_NODES && !this.knownNodes.has(from)) {
+                            this.knownNodes.add(from);
+                            this.attemptConnection(from, true);
+                            this.appendToNodeLog(`Discovered node ${from.slice(0, 8)}`);
+                        }
+                    } else if (type === 'announce') {
+                        if (this.isNodeActive || this.knownNodes.size === 0) {
+                            this.attemptConnection(from);
+                        }
+                    } else if (type === 'offer' && to === this.pubKey) {
+                        const pc = this.createPeerConnection(from, false);
+                        await pc.setRemoteDescription(new RTCSessionDescription(offer));
+                        const answer = await pc.createAnswer();
+                        await pc.setLocalDescription(answer);
+                        this.networkChannel.postMessage({
+                            type: 'answer',
+                            answer: { type: answer.type, sdp: answer.sdp },
+                            from: this.pubKey,
+                            to: from
+                        });
+                    } else if (type === 'answer' && to === this.pubKey) {
+                        await this.peers[from].pc.setRemoteDescription(new RTCSessionDescription(answer));
+                    } else if (type === 'candidate' && to === this.pubKey && this.peers[from]) {
+                        await this.peers[from].pc.addIceCandidate(new RTCIceCandidate(candidate));
+                    }
+                };
+            }
+            startPeerDiscovery() {
+                setInterval(() => {
+                    if (this.networkChannel && this.pubKey && this.connectedPeers.size < this.MAX_PEERS) {
+                        this.networkChannel.postMessage({
+                            type: this.isNodeActive ? 'node_announce' : 'announce',
+                            from: this.pubKey,
+                            isNode: this.isNodeActive
+                        });
+                    }
+                }, this.BROADCAST_INTERVAL);
+            }
+            toggleNode() {
+                if (!this.pubKey) {
+                    this.updateStatus("[ERR] Must be logged in to run a node");
+                    return;
                 }
-                break;
-        }
-    }
-
-    relayMessage(data, senderPeerId) {
-        Object.keys(this.peers).forEach(peerId => {
-            if (peerId !== senderPeerId && peerId !== this.pubKey) {
-                const channel = this.peers[peerId].channel;
-                if (channel?.readyState === 'open') {
-                    channel.send(JSON.stringify(data));
+                if (this.isNodeActive) {
+                    this.stopNode();
+                } else {
+                    this.startNode();
                 }
+                this.updateNodeUI();
             }
-        });
-    }
-
-    broadcast(message) {
-        const msg = JSON.stringify({ ...message, pubKey: this.pubKey });
-        Object.values(this.peers).forEach(({ channel }) => {
-            if (channel?.readyState === 'open') {
-                channel.send(msg);
-            }
-        });
-    }
-
-    async sendTx() {
-        try {
-            const recipient = document.getElementById("recipient").value.trim();
-            const amount = parseFloat(document.getElementById("amount").value) || 0;
-            if (!recipient || amount <= 0) throw new Error("Invalid recipient or amount");
-            if (this.blockchain.getBalance() < amount) throw new Error("Insufficient funds");
-            const tx = await this.blockchain.createTransaction(recipient, amount);
-            this.broadcast({ type: 'transaction', data: tx });
-            this.updateStatus(`[SYS] Transaction sent: ${amount} KRY to ${recipient.slice(0, 8)}`);
-            document.getElementById("recipient").value = "";
-            document.getElementById("amount").value = "";
-        } catch (e) {
-            this.updateStatus(`[ERR] Send failed: ${e.message}`);
-        }
-    }
-
-    async stakeFractal() {
-        const amount = parseFloat(document.getElementById("stakeAmount").value) || 0;
-        if (amount <= 0 || this.blockchain.getBalance() < amount) {
-            this.updateStatus("[ERR] Invalid stake amount or insufficient funds");
-            return;
-        }
-        const stakeTx = await this.blockchain.createFractalStakeTransaction(amount, this.blockchain.longestChain.stats.height);
-        this.broadcast({ type: 'transaction', data: stakeTx });
-        this.updateStatus(`[SYS] Staked ${amount} KRY`);
-        document.getElementById("stakeAmount").value = "";
-    }
-
-    async thawFractal() {
-        const tx = await this.blockchain.thawNextFractalChunk();
-        if (tx) {
-            this.broadcast({ type: 'transaction', data: tx });
-            this.updateStatus(`[SYS] Thawed ${tx.outputs[0].amount} KRY`);
-        } else {
-            this.updateStatus("[SYS] No cases ready to thaw");
-        }
-    }
-
-    showBurnDialog() {
-        document.getElementById('burnDialog').style.display = 'block';
-    }
-
-    hideBurnDialog() {
-        document.getElementById('burnDialog').style.display = 'none';
-        document.getElementById('burnAmount').value = '';
-    }
-
-    async burnKRY() {
-        const amount = parseFloat(document.getElementById("burnAmount").value) || 0;
-        if (amount <= 0 || this.blockchain.getBalance() < amount) {
-            this.updateStatus("[ERR] Invalid burn amount or insufficient funds");
-            return;
-        }
-        const burnTx = await this.blockchain.createBurnTransaction(amount);
-        this.broadcast({ type: 'transaction', data: burnTx });
-        this.updateStatus(`[SYS] Burned ${amount} KRY`);
-        this.hideBurnDialog();
-    }
-
-    async sendChatMessage() {
-        const message = document.getElementById('chatInput').value.trim();
-        if (!message) {
-            this.updateStatus("[ERR] Empty message");
-            return;
-        }
-        if (!this.connectedPeers.size) {
-            this.updateStatus("[ERR] No peers connected");
-            return;
-        }
-        const messageId = `${this.pubKey}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        const chatData = {
-            message,
-            timestamp: Date.now(),
-            pubKey: this.pubKey,
-            messageId,
-            color: document.getElementById('chatColor').value,
-            username: document.getElementById('chatUsername').value || 'Anonymous'
-        };
-        this.broadcast({ type: 'chat', data: chatData });
-        this.displayChatMessage(chatData, this.pubKey);
-        document.getElementById('chatInput').value = '';
-        this.updateStatus("[SYS] Chat message sent");
-    }
-
-    displayChatMessage(data, fromPubKey) {
-        if (this.messageHistory.has(data.messageId)) return;
-        this.messageHistory.add(data.messageId);
-        const chatLog = document.getElementById('chatLog');
-        const time = new Date(data.timestamp).toLocaleTimeString();
-        const sender = data.username || (fromPubKey === this.pubKey ? 'You' : fromPubKey.slice(0, 8));
-        const color = data.color || '#FFFFFF';
-        chatLog.innerHTML += `<div>[${time}] <span class="sender" style="color: ${color}">${sender}</span>: ${data.message}</div>`;
-        chatLog.scrollTop = chatLog.scrollHeight;
-    }
-
-    updateStatus(message) {
-        document.getElementById('status').textContent = message;
-    }
-
-    updatePubKeyDisplay() {
-        document.getElementById("pubKeyDisplay").textContent = `Your Public Key: ${this.pubKey || "Not set"}`;
-        document.getElementById("walletAddress").textContent = this.pubKey || "Not set";
-        document.getElementById("mineWalletAddress").textContent = this.pubKey || "Not set";
-    }
-}
-
-class Blockchain {
-    constructor(wallet) {
-        this.wallet = wallet;
-        this.longestChain = { block: null, utxos: {}, fractalStakes: {}, stats: { height: 0, difficulty: 1 } };
-        this.secondLongestChain = null;
-        this.pendingTxs = [];
-        this.processedTxHashes = new Set();
-        this.MINING_BASE_RATE = 3.14159;
-        this.FRACTAL_CHUNKS = 10;
-        this.REWARD_BOOST_PER_CHUNK = 0.01; 
-        this.BLOCK_TIME = 15000;
-        this.consensusInterval = null;
-        this.isMining = false;
-    }
-
-    async loadChain() {
-        const longestData = await getItem('blockchain', `longest_${this.wallet.pubKey}`);
-        if (longestData) {
-            this.longestChain = JSON.parse(longestData);
-        }
-        const secondData = await getItem('blockchain', `second_${this.wallet.pubKey}`);
-        if (secondData) {
-            this.secondLongestChain = JSON.parse(secondData);
-        }
-        this.processedTxHashes = new Set(this.longestChain.block?.transactions.map(tx => tx.hash) || []);
-        this.updateUI();
-    }
-
-    async saveState() {
-        await setItem('blockchain', `longest_${this.wallet.pubKey}`, JSON.stringify(this.longestChain));
-        if (this.secondLongestChain) {
-            await setItem('blockchain', `second_${this.wallet.pubKey}`, JSON.stringify(this.secondLongestChain));
-        }
-    }
-
-    getBalance() {
-        return (this.longestChain.utxos[this.wallet.pubKey] || []).reduce((sum, utxo) => sum + utxo.amount, 0);
-    }
-
-    getFractalStake() {
-        return (this.longestChain.fractalStakes[this.wallet.pubKey] || []).reduce((sum, chunk) => sum + (chunk.isLocked ? chunk.amount : 0), 0);
-    }
-
-    getMiningRate() {
-        const chunks = this.longestChain.fractalStakes[this.wallet.pubKey] || [];
-        const thawedCount = chunks.filter(chunk => !chunk.isLocked).length;
-        return this.MINING_BASE_RATE * (1 + thawedCount * this.REWARD_BOOST_PER_CHUNK);
-    }
-
-    getFrozenKryoCases() {
-        return (this.longestChain.fractalStakes[this.wallet.pubKey] || []).filter(chunk => chunk.isLocked).length;
-    }
-
-    getThawedKryoCases() {
-        return (this.longestChain.fractalStakes[this.wallet.pubKey] || []).filter(chunk => !chunk.isLocked).length;
-    }
-
-    getThawableKryoCases() {
-        return (this.longestChain.fractalStakes[this.wallet.pubKey] || []).filter(chunk => chunk.isLocked && this.longestChain.stats.height >= chunk.lockHeight).length;
-    }
-
-    initializeWallet() {
-        this.longestChain = {
-            block: null,
-            utxos: { [this.wallet.pubKey]: [] },
-            fractalStakes: { [this.wallet.pubKey]: [] },
-            stats: { height: 0, difficulty: 1 }
-        };
-        this.secondLongestChain = null;
-        this.saveState();
-    }
-
-    async createTransaction(recipient, amount) {
-        const inputs = [];
-        let inputSum = 0;
-        const availableUtxos = [...(this.longestChain.utxos[this.wallet.pubKey] || [])];
-        for (const utxo of availableUtxos) {
-            if (inputSum >= amount) break;
-            inputs.push({ to: this.wallet.pubKey, txid: utxo.txid, vout: utxo.vout, amount: utxo.amount });
-            inputSum += utxo.amount;
-        }
-        if (inputSum < amount) throw new Error("Insufficient funds");
-        const tx = {
-            inputs,
-            outputs: [
-                { to: recipient, amount },
-                ...(inputSum > amount ? [{ to: this.wallet.pubKey, amount: inputSum - amount }] : [])
-            ],
-            fee: 0,
-            timestamp: Date.now(),
-            pubKey: this.wallet.pubKey,
-            type: 'transfer'
-        };
-        tx.hash = await this.wallet.sha256(JSON.stringify({ inputs: tx.inputs, outputs: tx.outputs, fee: tx.fee, timestamp: tx.timestamp, type: tx.type }));
-        tx.signature = this.wallet.keyPair.sign(tx.hash).toDER('hex');
-        this.pendingTxs.push(tx);
-        return tx;
-    }
-
-    async createFractalStakeTransaction(amount, currentHeight) {
-        const inputs = [];
-        let inputSum = 0;
-        const availableUtxos = [...(this.longestChain.utxos[this.wallet.pubKey] || [])];
-        for (const utxo of availableUtxos) {
-            if (inputSum >= amount) break;
-            inputs.push({ to: this.wallet.pubKey, txid: utxo.txid, vout: utxo.vout, amount: utxo.amount });
-            inputSum += utxo.amount;
-        }
-        if (inputSum < amount) throw new Error("Insufficient funds");
-        const chunkAmount = amount / this.FRACTAL_CHUNKS;
-        const tx = {
-            inputs,
-            outputs: Array.from({ length: this.FRACTAL_CHUNKS }, (_, i) => ({
-                to: this.wallet.pubKey,
-                amount: chunkAmount,
-                isFractal: true,
-                lockHeight: currentHeight + 100 * (i + 1)
-            })),
-            fee: 0,
-            timestamp: Date.now(),
-            pubKey: this.wallet.pubKey,
-            type: 'fractal_stake'
-        };
-        tx.hash = await this.wallet.sha256(JSON.stringify({ inputs: tx.inputs, outputs: tx.outputs, fee: tx.fee, timestamp: tx.timestamp, type: tx.type }));
-        tx.signature = this.wallet.keyPair.sign(tx.hash).toDER('hex');
-        this.pendingTxs.push(tx);
-        return tx;
-    }
-
-    async createBurnTransaction(amount) {
-        const inputs = [];
-        let inputSum = 0;
-        const availableUtxos = [...(this.longestChain.utxos[this.wallet.pubKey] || [])];
-        for (const utxo of availableUtxos) {
-            if (inputSum >= amount) break;
-            inputs.push({ to: this.wallet.pubKey, txid: utxo.txid, vout: utxo.vout, amount: utxo.amount });
-            inputSum += utxo.amount;
-        }
-        if (inputSum < amount) throw new Error("Insufficient funds");
-        const tx = {
-            inputs,
-            outputs: [],
-            fee: 0,
-            timestamp: Date.now(),
-            pubKey: this.wallet.pubKey,
-            type: 'burn',
-            burnAmount: amount
-        };
-        tx.hash = await this.wallet.sha256(JSON.stringify({ inputs: tx.inputs, outputs: tx.outputs, fee: tx.fee, timestamp: tx.timestamp, type: tx.type, burnAmount: tx.burnAmount }));
-        tx.signature = this.wallet.keyPair.sign(tx.hash).toDER('hex');
-        this.pendingTxs.push(tx);
-        return tx;
-    }
-
-    async thawNextFractalChunk() {
-        const chunks = this.longestChain.fractalStakes[this.wallet.pubKey] || [];
-        const nextChunk = chunks.find(chunk => chunk.isLocked && this.longestChain.stats.height >= chunk.lockHeight);
-        if (!nextChunk) return null;
-        const tx = {
-            inputs: [],
-            outputs: [{ to: this.wallet.pubKey, amount: nextChunk.amount }],
-            fee: 0,
-            timestamp: Date.now(),
-            pubKey: this.wallet.pubKey,
-            type: 'fractal_unstake'
-        };
-        tx.hash = await this.wallet.sha256(JSON.stringify({ inputs: tx.inputs, outputs: tx.outputs, fee: tx.fee, timestamp: tx.timestamp, type: tx.type }));
-        tx.signature = this.wallet.keyPair.sign(tx.hash).toDER('hex');
-        this.pendingTxs.push(tx);
-        nextChunk.isLocked = false;
-        this.saveState();
-        return tx;
-    }
-
-    async receiveTransaction(tx) {
-        if (this.verifyTransaction(tx) && !this.processedTxHashes.has(tx.hash)) {
-            this.pendingTxs.push(tx);
-            await this.processPendingTxs();
-            this.wallet.updateStatus(`[SYS] Processed transaction ${tx.hash.slice(0, 8)}`);
-        }
-    }
-
-    verifyTransaction(tx) {
-        const key = this.wallet.ec.keyFromPublic(tx.pubKey, 'hex');
-        const msgHash = tx.hash || this.wallet.sha256(JSON.stringify({ inputs: tx.inputs, outputs: tx.outputs, fee: tx.fee, timestamp: tx.timestamp, type: tx.type, ...(tx.burnAmount ? { burnAmount: tx.burnAmount } : {}) }));
-        return key.verify(msgHash, tx.signature);
-    }
-
-    async processPendingTxs() {
-        for (const tx of [...this.pendingTxs]) {
-            if (this.processedTxHashes.has(tx.hash)) {
-                this.pendingTxs = this.pendingTxs.filter(t => t.hash !== tx.hash);
-                continue;
-            }
-            const inputSum = tx.inputs.length ? tx.inputs.reduce((sum, input) => sum + input.amount, 0) : 0;
-            const outputSum = tx.outputs.reduce((sum, out) => sum + out.amount, 0);
-            if (tx.type !== 'burn' && tx.type !== 'fractal_unstake' && inputSum < outputSum) continue;
-            if (tx.type === 'transfer' || tx.type === 'fractal_stake' || tx.type === 'burn') {
-                tx.inputs.forEach(input => {
-                    this.longestChain.utxos[input.to] = (this.longestChain.utxos[input.to] || []).filter(u => u.txid !== input.txid || u.vout !== input.vout);
-                });
-            }
-            if (tx.type === 'fractal_stake') {
-                const fractalOutputs = tx.outputs.filter(out => out.isFractal);
-                this.longestChain.fractalStakes[tx.pubKey] = this.longestChain.fractalStakes[tx.pubKey] || [];
-                fractalOutputs.forEach(out => {
-                    this.longestChain.fractalStakes[tx.pubKey].push({
-                        amount: out.amount,
-                        lockHeight: out.lockHeight,
-                        isLocked: true
-                    });
-                });
-            }
-            if (tx.type !== 'burn') {
-                tx.outputs.forEach((out, i) => {
-                    if (!out.isFractal) {
-                        this.longestChain.utxos[out.to] = this.longestChain.utxos[out.to] || [];
-                        this.longestChain.utxos[out.to].push({ txid: tx.hash, vout: i, amount: out.amount });
+            startNode() {
+                this.isNodeActive = true;
+                this.MAX_PEERS = 50;
+                this.updateStatus("[SYS] Node started");
+                this.appendToNodeLog("Node started");
+                Object.keys(this.peers).forEach(peerId => {
+                    if (this.peers[peerId].channel?.readyState === 'open') {
+                        this.blockchain.requestStateSync(this.peers[peerId].channel);
                     }
                 });
             }
-            this.processedTxHashes.add(tx.hash);
-            this.pendingTxs = this.pendingTxs.filter(t => t.hash !== tx.hash);
-        }
-        this.saveState();
-        this.updateUI();
-    }
-
-    startMining() {
-        if (!this.wallet.pubKey) {
-            this.wallet.updateStatus("[ERR] No wallet loaded. Please login or create a wallet.");
-            return;
-        }
-        if (!this.isMining) {
-            this.isMining = true;
-            this.consensusInterval = setInterval(async () => {
-                await this.mineBlock();
-            }, this.BLOCK_TIME);
-            this.wallet.updateStatus("[SYS] Mining started");
-        }
-    }
-
-    async mineBlock() {
-        if (!this.isMining) return;
-
-        await this.syncWithPeers();
-
-        const block = {
-            timestamp: Date.now(),
-            rewards: { [this.wallet.pubKey]: this.getMiningRate() },
-            transactions: [],
-            previousHash: this.longestChain.block ? await this.wallet.sha256(JSON.stringify(this.longestChain.block)) : "0",
-            height: this.longestChain.stats.height + 1
-        };
-        await this.processPendingTxs();
-        block.transactions = [...this.pendingTxs];
-        block.hash = await this.wallet.sha256(JSON.stringify({
-            timestamp: block.timestamp,
-            rewards: block.rewards,
-            transactions: block.transactions,
-            previousHash: block.previousHash,
-            height: block.height
-        }));
-        if (await this.verifyBlock(block)) {
-            if (this.longestChain.block) {
-                this.secondLongestChain = { ...this.longestChain };
+            stopNode() {
+                this.isNodeActive = false;
+                this.MAX_PEERS = 20;
+                this.knownNodes.clear();
+                Object.keys(this.peers).forEach(peerId => {
+                    if (this.peers[peerId].pc) {
+                        this.peers[peerId].pc.close();
+                    }
+                });
+                this.peers = {};
+                this.connectedPeers.clear();
+                this.relayHistory.clear();
+                this.updateStatus("[SYS] Node stopped");
+                this.appendToNodeLog("Node stopped");
+                this.joinMainNetwork();
             }
-            this.longestChain.block = block;
-            this.longestChain.stats.height = block.height;
-            for (const [pubKey, reward] of Object.entries(block.rewards)) {
-                this.longestChain.utxos[pubKey] = this.longestChain.utxos[pubKey] || [];
-                this.longestChain.utxos[pubKey].push({ txid: block.hash, vout: 0, amount: reward });
+            updateNodeUI() {
+                document.getElementById('nodeStatus').textContent = this.isNodeActive ? 'Active' : 'Inactive';
+                document.getElementById('nodeToggleText').textContent = this.isNodeActive ? 'Stop Node' : 'Start Node';
             }
-            this.processedTxHashes = new Set(block.transactions.map(tx => tx.hash));
-            this.pendingTxs = [];
-            this.saveState();
-            this.appendToLog(`Block ${block.hash.slice(0, 8)} - Height: ${block.height}`);
-            this.updateUI();
-            this.wallet.broadcast({ type: 'block', data: block });
-            this.wallet.updateStatus(`[SYS] Mined block at height ${block.height}`);
-        } else {
-            this.wallet.updateStatus("[ERR] Failed to verify mined block");
+            appendToNodeLog(message) {
+                const nodeLog = document.getElementById('nodeLog');
+                const time = new Date().toLocaleTimeString();
+                nodeLog.innerHTML += `<div>[${time}] ${message}</div>`;
+                nodeLog.scrollTop = nodeLog.scrollHeight;
+            }
+            appendToLog(screen, message) {
+                const log = document.getElementById(`${screen}Log`);
+                const time = new Date().toLocaleTimeString();
+                log.innerHTML += `<div>[${time}] ${message}</div>`;
+                log.scrollTop = log.scrollHeight;
+            }
+            async onMessage(data, fromPeerPubkey) {
+                const msg = JSON.parse(data);
+                if (msg.pubKey === this.pubKey) return;
+                switch (msg.type) {
+                    case 'transaction':
+                        this.updateStatus(`[SYS] Received transaction from ${fromPeerPubkey.slice(0, 8)}`);
+                        await this.blockchain.receiveTransaction(msg.data, fromPeerPubkey);
+                        this.relayMessage(msg, fromPeerPubkey);
+                        break;
+                    case 'block':
+                        this.updateStatus(`[SYS] Received block from ${fromPeerPubkey.slice(0, 8)}`);
+                        await this.blockchain.receiveBlock(msg.data, fromPeerPubkey);
+                        this.relayMessage(msg, fromPeerPubkey);
+                        break;
+                    case 'state_request':
+                        this.updateStatus(`[SYS] State requested by ${fromPeerPubkey.slice(0, 8)}`);
+                        if (this.peers[fromPeerPubkey]?.channel?.readyState === 'open') {
+                            this.blockchain.sendState(this.peers[fromPeerPubkey].channel);
+                        }
+                        break;
+                    case 'state':
+                        this.updateStatus(`[SYS] Received state from ${fromPeerPubkey.slice(0, 8)}`);
+                        await this.blockchain.syncState(msg.data);
+                        break;
+                    case 'chat':
+                        if (!this.messageHistory.has(msg.data.messageId)) {
+                            this.updateStatus(`[SYS] Received chat from ${fromPeerPubkey.slice(0, 8)}`);
+                            this.displayChatMessage(msg.data, fromPeerPubkey);
+                            this.relayMessage(msg, fromPeerPubkey);
+                        }
+                        break;
+                }
+            }
+            async relayMessage(data, senderPeerId) {
+                const messageId = data.data?.hash || data.data?.messageId || JSON.stringify(data);
+                if (this.relayHistory.has(messageId)) return;
+                this.relayHistory.add(messageId);
+                setTimeout(() => this.relayHistory.delete(messageId), 60000);
+                const now = Date.now();
+                Object.keys(this.peers).forEach(peerId => {
+                    if (peerId !== senderPeerId && peerId !== this.pubKey) {
+                        const channel = this.peers[peerId].channel;
+                        if (channel?.readyState === 'open') {
+                            if (!this.lastRelay[peerId] || now - this.lastRelay[peerId] > this.RELAY_COOLDOWN) {
+                                channel.send(JSON.stringify(data));
+                                this.lastRelay[peerId] = now;
+                                this.appendToNodeLog(`Relayed message to ${peerId.slice(0, 8)}`);
+                            }
+                        }
+                    }
+                });
+            }
+            broadcast(message) {
+                const msg = JSON.stringify({ ...message, pubKey: this.pubKey });
+                Object.values(this.peers).forEach(({ channel }) => {
+                    if (channel?.readyState === 'open') {
+                        channel.send(msg);
+                    }
+                });
+            }
+            appendToLog(screen, message) {
+                // Map screen names to correct log element IDs
+                const logIdMap = {
+                    sendReceive: 'log',
+                    staking: 'stakeLog',
+                    mine: 'mineLog',
+                    node: 'nodeLog',
+                    blockExplorer: 'blockLog'
+                };
+                const logId = logIdMap[screen];
+                if (!logId) {
+                    console.warn(`[WARN] No log ID mapped for screen: ${screen}`);
+                    return;
+                }
+                const log = document.getElementById(logId);
+                if (log) {
+                    const time = new Date().toLocaleTimeString();
+                    log.innerHTML += `<div>[${time}] ${message}</div>`;
+                    log.scrollTop = log.scrollHeight;
+                } else {
+                    console.warn(`[WARN] Log element not found for ID: ${logId}`);
+                }
+            }
+            async sendTx() {
+                try {
+                    const recipient = document.getElementById("recipient").value.trim();
+                    const amount = parseFloat(document.getElementById("amount").value) || 0;
+                    const fee = parseFloat(document.getElementById("txFee").value) || 0;
+                    if (!recipient || amount <= 0 || fee < 0) throw new Error("Invalid recipient, amount, or fee");
+                    if (this.blockchain.getBalance() < amount + fee) throw new Error("Insufficient funds");
+                    // Create and broadcast transaction without immediate UTXO updates
+                    const tx = await this.blockchain.createTransaction(recipient, amount, fee);
+                    this.broadcast({ type: 'transaction', data: tx });
+                    // Warn if no miners are active
+                    if (!this.blockchain.isMining && this.connectedPeers.size === 0) {
+                        this.updateStatus("[WARN] No miners active. Start mining to confirm transaction.");
+                        this.appendToLog("sendReceive", "Transaction pending. Start mining to confirm.");
+                    } else {
+                        this.appendToLog("sendReceive", `Sent ${amount} KRY to ${recipient.slice(0, 8)} (pending)`);
+                    }
+                    this.updateStatus(`[SYS] Transaction broadcast: ${amount} KRY to ${recipient.slice(0, 8)}`);
+                    document.getElementById("recipient").value = "";
+                    document.getElementById("amount").value = "";
+                    document.getElementById("txFee").value = "0.0005";
+                } catch (e) {
+                    this.updateStatus(`[ERR] Send failed: ${e.message}`);
+                    this.appendToLog("sendReceive", `Error: ${e.message}`);
+                }
+            }
+            async stakeFractal() {
+                try {
+                    const amount = parseFloat(document.getElementById("stakeAmount").value) || 0;
+                    const period = parseInt(document.getElementById("stakePeriod").value);
+                    if (amount <= 0 || this.blockchain.getBalance() < amount) {
+                        throw new Error("Invalid stake amount or insufficient funds");
+                    }
+                    // Create and broadcast stake transaction
+                    const stakeTx = await this.blockchain.createStakeTransaction(amount, period);
+                    this.broadcast({ type: 'transaction', data: stakeTx });
+                    // Warn if no miners are active
+                    if (!this.blockchain.isMining && this.connectedPeers.size === 0) {
+                        this.updateStatus("[WARN] No miners active. Start mining to confirm stake.");
+                        this.appendToLog("staking", "Stake pending. Start mining to confirm.");
+                    } else {
+                        this.appendToLog("staking", `Staked ${amount} KRY for ${period} blocks (pending)`);
+                    }
+                    this.updateStatus(`[SYS] Stake broadcast: ${amount} KRY for ${period} blocks`);
+                    document.getElementById("stakeAmount").value = "";
+                } catch (e) {
+                    this.updateStatus(`[ERR] Stake failed: ${e.message}`);
+                    this.appendToLog("staking", `Error: ${e.message}`);
+                }
+            }
+            async thawFractal() {
+                try {
+                    const tx = await this.blockchain.thawStake();
+                    if (tx) {
+                        this.broadcast({ type: 'transaction', data: tx });
+                        this.updateStatus(`[SYS] Thaw transaction broadcast: ${tx.outputs[0].amount} KRY`);
+                        this.appendToLog("staking", `Thawed ${tx.outputs[0].amount} KRY (pending)`);
+                    } else {
+                        this.updateStatus("[SYS] No stakes ready to thaw");
+                        this.appendToLog("staking", "No stakes ready to thaw");
+                    }
+                } catch (e) {
+                    this.updateStatus(`[ERR] Thaw failed: ${e.message}`);
+                    this.appendToLog("staking", `Error: ${e.message}`);
+                }
+            }
+            showBurnDialog() {
+                document.getElementById('burnDialog').style.display = 'block';
+            }
+            hideBurnDialog() {
+                document.getElementById('burnDialog').style.display = 'none';
+                document.getElementById('burnAmount').value = '';
+            }
+            async burnKRY() {
+                try {
+                    const amount = parseFloat(document.getElementById("burnAmount").value) || 0;
+                    if (amount <= 0 || this.blockchain.getBalance() < amount) {
+                        throw new Error("Invalid burn amount or insufficient funds");
+                    }
+                    const burnTx = await this.blockchain.createBurnTransaction(amount);
+                    this.broadcast({ type: 'transaction', data: burnTx });
+                    if (!this.blockchain.isMining && this.connectedPeers.size === 0) {
+                        this.updateStatus("[WARN] No miners active. Start mining to confirm burn.");
+                        this.appendToLog("staking", "Burn pending. Start mining to confirm.");
+                    } else {
+                        this.appendToLog("staking", `Burned ${amount} KRY (pending)`);
+                    }
+                    this.updateStatus(`[SYS] Burn transaction broadcast: ${amount} KRY`);
+                    this.hideBurnDialog();
+                } catch (e) {
+                    this.updateStatus(`[ERR] Burn failed: ${e.message}`);
+                    this.appendToLog("staking", `Error: ${e.message}`);
+                }
+            }
+            async sendChatMessage() {
+                try {
+                    const message = document.getElementById('chatInput').value.trim();
+                    if (!message) throw new Error("Empty message");
+                    if (!this.connectedPeers.size) throw new Error("No peers connected");
+                    if (this.blockchain.getBalance() < this.CHAT_POST_COST) throw new Error("Insufficient funds for chat post (0.001 KRY required)");
+                    const messageId = `${this.pubKey}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                    const chatData = {
+                        message,
+                        timestamp: Date.now(),
+                        pubKey: this.pubKey,
+                        messageId,
+                        color: document.getElementById('chatColor').value,
+                        username: document.getElementById('chatUsername').value || 'Anonymous'
+                    };
+                    this.broadcast({ type: 'chat', data: chatData });
+                    this.displayChatMessage(chatData, this.pubKey);
+                    document.getElementById('chatInput').value = '';
+                    document.getElementById('charCount').textContent = '0/280';
+                    this.updateStatus("[SYS] Chat message sent");
+                } catch (e) {
+                    this.updateStatus(`[ERR] Chat failed: ${e.message}`);
+                }
+            }
+            displayChatMessage(data, fromPubKey) {
+                if (this.messageHistory.has(data.messageId)) return;
+                this.messageHistory.add(data.messageId);
+                const chatLog = document.getElementById('chatLog');
+                const time = new Date(data.timestamp).toLocaleTimeString();
+                const sender = data.username || (fromPubKey === this.pubKey ? 'You' : fromPubKey.slice(0, 8));
+                const color = data.color || '#FFFFFF';
+                chatLog.innerHTML += `<div>[${time}] <span class="sender" style="color: ${color}">${sender}</span>: ${data.message}</div>`;
+                chatLog.scrollTop = chatLog.scrollHeight;
+            }
+            async sendOksanaMessage() {
+                try {
+                    const message = document.getElementById('oksanaInput').value.trim();
+                    if (!message) throw new Error("Empty message");
+                    const oksanaLog = document.getElementById('oksanaChatLog');
+                    const userTime = new Date().toLocaleTimeString();
+                    oksanaLog.innerHTML += `<div>[${userTime}] You: ${message}</div>`;
+                    oksanaLog.scrollTop = oksanaLog.scrollHeight;
+                    this.updateStatus("[SYS] Oksana is typing...");
+                    const response = "I'm still learning, but I'll try to assist you soon!";
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    const oksanaTime = new Date().toLocaleTimeString();
+                    oksanaLog.innerHTML += `<div>[${oksanaTime}] Oksana: ${response}</div>`;
+                    oksanaLog.scrollTop = oksanaLog.scrollHeight;
+                    document.getElementById('oksanaInput').value = '';
+                    this.updateStatus("[SYS] Message sent to Oksana");
+                } catch (e) {
+                    this.updateStatus(`[ERR] Oksana message failed: ${e.message}`);
+                }
+            }
+            updateStakeRewardEstimate() {
+                const amount = parseFloat(document.getElementById("stakeAmount").value) || 0;
+                const period = parseInt(document.getElementById("stakePeriod").value);
+                const reward = this.blockchain.calculateStakeReward(amount, period).toFixed(4);
+                document.getElementById("rewardEstimate").textContent = `Est. Reward: ${reward} KRY`;
+            }
+            updateStatus(message) {
+                document.getElementById('status').textContent = message;
+            }
+            updatePubKeyDisplay() {
+                document.getElementById("pubKeyDisplay").textContent = `Your Public Key: ${this.pubKey || "Not set"}`;
+                document.getElementById("walletAddress").textContent = this.pubKey || "Not set";
+                document.getElementById("mineWalletAddress").textContent = this.pubKey || "Not set";
+            }
         }
-    }
-
-    async receiveBlock(block, fromPeerPubkey) {
-        if (this.longestChain.block?.hash === block.hash) return;
-        if (block.height > this.longestChain.stats.height) {
-            if (await this.verifyBlock(block)) {
-                this.secondLongestChain = { ...this.longestChain };
-                this.longestChain.block = block;
-                this.longestChain.stats.height = block.height;
-                this.updateStateFromBlock(block);
-                this.saveState();
-                this.wallet.updateStatus(`[SYS] New longest chain at height ${block.height} from ${fromPeerPubkey.slice(0, 8)}`);
+        class Blockchain {
+            constructor(wallet) {
+                this.wallet = wallet;
+                this.chain = [];
+                this.pendingTransactions = [];
+                this.utxos = {};
+                this.stakes = {};
+                this.MINING_REWARD = 0.1;
+                this.BLOCK_TIME = 60000;
+                this.DIFFICULTY = 10;
+                this.recentBlockTimestamps = [];
+                this.MAX_RECENT_BLOCKS = 3;
+                this.isMining = false;
+            }
+            async loadChain() {
+                const chainData = await getItem('blockchain', `chain_${this.wallet.pubKey}`);
+                if (chainData) {
+                    const decompressed = pako.ungzip(new Uint8Array(atob(chainData).split('').map(c => c.charCodeAt(0))), { to: 'string' });
+                    this.chain = JSON.parse(decompressed);
+                }
+                const utxoData = await getItem('blockchain', `utxos_${this.wallet.pubKey}`);
+                if (utxoData) {
+                    this.utxos = JSON.parse(utxoData);
+                }
+                const stakeData = await getItem('blockchain', `stakes_${this.wallet.pubKey}`);
+                if (stakeData) {
+                    this.stakes = JSON.parse(stakeData);
+                }
                 this.updateUI();
             }
-        } else if (block.height === this.longestChain.stats.height - 1 && !this.secondLongestChain) {
-            this.secondLongestChain = {
-                block,
-                utxos: { ...this.longestChain.utxos },
-                fractalStakes: { ...this.longestChain.fractalStakes },
-                stats: { height: block.height, difficulty: 1 }
-            };
-            this.saveState();
-        }
-    }
-
-    async verifyBlock(block) {
-        const expectedHash = await this.wallet.sha256(JSON.stringify({
-            timestamp: block.timestamp,
-            rewards: block.rewards,
-            transactions: block.transactions,
-            previousHash: block.previousHash,
-            height: block.height
-        }));
-        return expectedHash === block.hash;
-    }
-
-    updateStateFromBlock(block) {
-        for (const [pubKey, reward] of Object.entries(block.rewards)) {
-            this.longestChain.utxos[pubKey] = this.longestChain.utxos[pubKey] || [];
-            this.longestChain.utxos[pubKey].push({ txid: block.hash, vout: 0, amount: reward });
-        }
-        this.processedTxHashes = new Set(block.transactions.map(tx => tx.hash));
-        this.processPendingTxs();
-    }
-
-    async syncWithPeers() {
-        if (this.wallet.connectedPeers.size === 0) {
-            this.wallet.updateStatus("[SYS] No peers connected, using local chain");
-            return;
-        }
-        Object.values(this.wallet.peers).forEach(({ channel }) => {
-            if (channel?.readyState === 'open') {
-                channel.send(JSON.stringify({ type: 'state_request', pubKey: this.wallet.pubKey }));
+            async saveState() {
+                const compressedChain = pako.gzip(JSON.stringify(this.chain));
+                await setItem('blockchain', `chain_${this.wallet.pubKey}`, btoa(String.fromCharCode(...compressedChain)));
+                await setItem('blockchain', `utxos_${this.wallet.pubKey}`, JSON.stringify(this.utxos));
+                await setItem('blockchain', `stakes_${this.wallet.pubKey}`, JSON.stringify(this.stakes));
             }
-        });
-    }
-
-    requestStateSync(channel) {
-        if (channel.readyState === 'open') {
-            channel.send(JSON.stringify({ type: 'state_request', pubKey: this.wallet.pubKey }));
+            getBalance() {
+                return (this.utxos[this.wallet.pubKey] || []).reduce((sum, utxo) => sum + utxo.amount, 0);
+            }
+            getStake() {
+                return (this.stakes[this.wallet.pubKey] || []).reduce((sum, stake) => sum + (stake.isLocked ? stake.amount : 0), 0);
+            }
+            getMiningRate() {
+                const stakes = this.stakes[this.wallet.pubKey] || [];
+                const activeStakes = stakes.filter(stake => !stake.isLocked).length;
+                return this.MINING_REWARD * (1 + activeStakes * 0.05);
+            }
+            getFrozenStakes() {
+                return (this.stakes[this.wallet.pubKey] || []).filter(stake => stake.isLocked).length;
+            }
+            getThawedStakes() {
+                return (this.stakes[this.wallet.pubKey] || []).filter(stake => !stake.isLocked).length;
+            }
+            getThawableStakes() {
+                const currentHeight = this.chain.length;
+                return (this.stakes[this.wallet.pubKey] || []).filter(stake => stake.isLocked && currentHeight >= stake.lockHeight).length;
+            }
+            initializeWallet() {
+                this.chain = [];
+                this.utxos = { [this.wallet.pubKey]: [] };
+                this.stakes = { [this.wallet.pubKey]: [] };
+                this.pendingTransactions = [];
+                this.saveState();
+            }
+            async createTransaction(to, amount, fee) {
+                const inputs = [];
+                let inputSum = 0;
+                const availableUtxos = [...(this.utxos[this.wallet.pubKey] || [])];
+                for (const utxo of availableUtxos) {
+                    if (inputSum >= amount + fee) break;
+                    inputs.push(utxo);
+                    inputSum += utxo.amount;
+                }
+                if (inputSum < amount + fee) throw new Error("Insufficient funds");
+                const tx = {
+                    inputs,
+                    outputs: [
+                        { to, amount },
+                        ...(inputSum > amount + fee ? [{ to: this.wallet.pubKey, amount: inputSum - amount - fee }] : [])
+                    ],
+                    fee,
+                    timestamp: Date.now(),
+                    type: 'transfer',
+                    signer: this.wallet.pubKey
+                };
+                tx.hash = await this.wallet.sha256(JSON.stringify(tx));
+                tx.signature = this.wallet.keyPair.sign(tx.hash).toDER('hex');
+                this.pendingTransactions.push(tx);
+                return tx;
+            }
+            async createStakeTransaction(amount, period) {
+                const inputs = [];
+                let inputSum = 0;
+                const availableUtxos = [...(this.utxos[this.wallet.pubKey] || [])];
+                for (const utxo of availableUtxos) {
+                    if (inputSum >= amount) break;
+                    inputs.push(utxo);
+                    inputSum += utxo.amount;
+                }
+                if (inputSum < amount) throw new Error("Insufficient funds");
+                const tx = {
+                    inputs,
+                    outputs: [],
+                    stake: { amount, lockHeight: this.chain.length + period },
+                    timestamp: Date.now(),
+                    type: 'stake',
+                    signer: this.wallet.pubKey
+                };
+                tx.hash = await this.wallet.sha256(JSON.stringify(tx));
+                tx.signature = this.wallet.keyPair.sign(tx.hash).toDER('hex');
+                this.pendingTransactions.push(tx);
+                // Tentatively add stake
+                this.stakes[this.wallet.pubKey] = this.stakes[this.wallet.pubKey] || [];
+                this.stakes[this.wallet.pubKey].push({ ...tx.stake, isLocked: true, id: tx.hash, pending: true });
+                this.updateUI();
+                return tx;
+            }
+            async thawStake() {
+                const stakes = this.stakes[this.wallet.pubKey] || [];
+                const thawableStake = stakes.find(stake => stake.isLocked && this.chain.length >= stake.lockHeight && !stake.pending);
+                if (!thawableStake) return null;
+                const tx = {
+                    inputs: [],
+                    outputs: [{ to: this.wallet.pubKey, amount: thawableStake.amount }],
+                    timestamp: Date.now(),
+                    type: 'unstake',
+                    stakeId: thawableStake.id,
+                    signer: this.wallet.pubKey
+                };
+                tx.hash = await this.wallet.sha256(JSON.stringify(tx));
+                tx.signature = this.wallet.keyPair.sign(tx.hash).toDER('hex');
+                this.pendingTransactions.push(tx);
+                return tx;
+            }
+            async createBurnTransaction(amount) {
+                const inputs = [];
+                let inputSum = 0;
+                const availableUtxos = [...(this.utxos[this.wallet.pubKey] || [])];
+                for (const utxo of availableUtxos) {
+                    if (inputSum >= amount) break;
+                    inputs.push(utxo);
+                    inputSum += utxo.amount;
+                }
+                if (inputSum < amount) throw new Error("Insufficient funds");
+                const tx = {
+                    inputs,
+                    outputs: [],
+                    burnAmount: amount,
+                    timestamp: Date.now(),
+                    type: 'burn',
+                    signer: this.wallet.pubKey
+                };
+                tx.hash = await this.wallet.sha256(JSON.stringify(tx));
+                tx.signature = this.wallet.keyPair.sign(tx.hash).toDER('hex');
+                this.pendingTransactions.push(tx);
+                return tx;
+            }
+            async receiveTransaction(tx, fromPeerPubkey) {
+                if (!this.verifyTransaction(tx)) {
+                    this.wallet.updateStatus(`[ERR] Invalid transaction ${tx.hash.slice(0, 8)}`);
+                    this.wallet.appendToLog("sendReceive", `Rejected tx ${tx.hash.slice(0, 8)}: Invalid`);
+                    return;
+                }
+                if (!this.pendingTransactions.some(t => t.hash === tx.hash) && 
+                    !this.chain.some(b => b.transactions.some(t => t.hash === tx.hash))) {
+                    this.pendingTransactions.push(tx);
+                    this.wallet.appendToLog("sendReceive", `Received tx ${tx.hash.slice(0, 8)} from ${fromPeerPubkey.slice(0, 8)} (pending)`);
+                }
+            }
+            async receiveBlock(block, fromPeerPubkey) {
+                if (this.chain.some(b => b.hash === block.hash)) return;
+                if (!(await this.verifyBlock(block))) {
+                    this.wallet.updateStatus(`[ERR] Invalid block ${block.hash.slice(0, 8)} from ${fromPeerPubkey.slice(0, 8)}`);
+                    return;
+                }
+                if (block.height > this.chain.length + 1) {
+                    this.requestStateSync(this.wallet.peers[fromPeerPubkey]?.channel);
+                    return;
+                } else if (block.height === this.chain.length + 1) {
+                    this.chain.push(block);
+                    this.processBlockTransactions(block);
+                    this.recordBlockTimestamp(block.timestamp);
+                    this.saveState();
+                    this.updateUI();
+                    this.wallet.updateStatus(`[SYS] Accepted block ${block.height} from ${fromPeerPubkey.slice(0, 8)}`);
+                    this.wallet.appendToLog("blockExplorer", `Accepted block ${block.height}`);
+                }
+            }
+            async verifyBlock(block) {
+                const expectedHash = await this.wallet.sha256(JSON.stringify({
+                    height: block.height,
+                    previousHash: block.previousHash,
+                    transactions: block.transactions,
+                    timestamp: block.timestamp,
+                    miner: block.miner,
+                    reward: block.reward
+                }));
+                const prevBlock = this.chain[this.chain.length - 1];
+                return expectedHash === block.hash && 
+                       (this.chain.length === 0 ? block.previousHash === '0' : block.previousHash === prevBlock?.hash);
+            }
+            verifyTransaction(tx) {
+                try {
+                    if (!tx.signer) return false;
+                    const key = this.wallet.ec.keyFromPublic(tx.signer, 'hex');
+                    const hash = tx.hash || this.wallet.sha256(JSON.stringify(tx));
+                    // Validate inputs for transactions that spend UTXOs
+                    if (tx.type === 'transfer' || tx.type === 'stake' || tx.type === 'burn') {
+                        let inputSum = 0;
+                        for (const input of tx.inputs || []) {
+                            const utxoList = this.utxos[tx.signer] || [];
+                            const utxo = utxoList.find(u => u.txid === input.txid && u.vout === input.vout);
+                            if (!utxo) {
+                                console.warn(`Invalid UTXO for tx ${tx.hash?.slice(0, 8)}: ${input.txid}:${input.vout}`);
+                                return false;
+                            }
+                            inputSum += utxo.amount;
+                        }
+                        if (tx.type === 'transfer') {
+                            const outputSum = tx.outputs.reduce((sum, out) => sum + out.amount, 0);
+                            if (inputSum < outputSum + (tx.fee || 0)) return false;
+                        } else if (tx.type === 'stake') {
+                            if (inputSum < tx.stake.amount) return false;
+                        } else if (tx.type === 'burn') {
+                            if (inputSum < tx.burnAmount) return false;
+                        }
+                    } else if (tx.type === 'unstake') {
+                        const stake = (this.stakes[tx.signer] || []).find(s => s.id === tx.stakeId);
+                        if (!stake || stake.isLocked || stake.amount !== tx.outputs[0].amount || stake.pending) return false;
+                    } else {
+                        return false; // Unknown transaction type
+                    }
+                    return key.verify(hash, tx.signature);
+                } catch (e) {
+                    console.warn(`Verification failed for tx ${tx.hash?.slice(0, 8)}: ${e.message}`);
+                    return false;
+                }
+            }
+            processBlockTransactions(block) {
+                const processedTxIds = new Set();
+                block.transactions.forEach(tx => {
+                    if (this.verifyTransaction(tx) && !processedTxIds.has(tx.hash)) {
+                        processedTxIds.add(tx.hash);
+                        // Initialize UTXO array for signer if needed
+                        this.utxos[tx.signer] = this.utxos[tx.signer] || [];
+                        // Remove spent inputs
+                        if (tx.inputs && tx.inputs.length > 0) {
+                            tx.inputs.forEach(input => {
+                                this.utxos[tx.signer] = (this.utxos[tx.signer] || []).filter(
+                                    u => !(u.txid === input.txid && u.vout === input.vout)
+                                );
+                            });
+                            console.debug(`Removed ${tx.inputs.length} inputs for tx ${tx.hash.slice(0, 8)}`);
+                        }
+                        // Add new outputs
+                        if (tx.type === 'transfer' || tx.type === 'unstake') {
+                            tx.outputs.forEach((output, i) => {
+                                this.utxos[output.to] = this.utxos[output.to] || [];
+                                this.utxos[output.to].push({ txid: tx.hash, vout: i, amount: output.amount });
+                            });
+                            console.debug(`Added ${tx.outputs.length} outputs for tx ${tx.hash.slice(0, 8)}`);
+                        }
+                        // Process stakes
+                        if (tx.type === 'stake') {
+                            this.stakes[tx.signer] = this.stakes[tx.signer] || [];
+                            // Remove pending stake if exists
+                            this.stakes[tx.signer] = this.stakes[tx.signer].filter(s => s.id !== tx.hash || !s.pending);
+                            this.stakes[tx.signer].push({ ...tx.stake, isLocked: true, id: tx.hash, pending: false });
+                            this.wallet.appendToLog("staking", `Confirmed stake: ${tx.stake.amount} KRY until block ${tx.stake.lockHeight}`);
+                            console.debug(`Confirmed stake ${tx.hash.slice(0, 8)}: ${tx.stake.amount} KRY`);
+                        } else if (tx.type === 'unstake') {
+                            const stake = this.stakes[tx.signer]?.find(s => s.id === tx.stakeId);
+                            if (stake) {
+                                stake.isLocked = false;
+                                this.wallet.appendToLog("staking", `Confirmed unstake: ${stake.amount} KRY`);
+                                console.debug(`Confirmed unstake ${tx.stakeId.slice(0, 8)}: ${stake.amount} KRY`);
+                            }
+                        } else if (tx.type === 'burn') {
+                            this.wallet.appendToLog("staking", `Confirmed burn: ${tx.burnAmount} KRY`);
+                            console.debug(`Confirmed burn ${tx.hash.slice(0, 8)}: ${tx.burnAmount} KRY`);
+                        } else if (tx.type === 'transfer') {
+                            this.wallet.appendToLog("sendReceive", `Confirmed tx: ${tx.outputs[0].amount} KRY to ${tx.outputs[0].to.slice(0, 8)}`);
+                            console.debug(`Confirmed transfer ${tx.hash.slice(0, 8)}: ${tx.outputs[0].amount} KRY`);
+                        }
+                        this.appendToTxLog(tx);
+                    } else {
+                        console.warn(`Skipped tx ${tx.hash?.slice(0, 8)}: Invalid or duplicate`);
+                    }
+                });
+                // Process miner reward
+                this.utxos[block.miner] = this.utxos[block.miner] || [];
+                this.utxos[block.miner].push({ txid: block.hash, vout: 0, amount: block.reward });
+                console.debug(`Added miner reward for block ${block.height}: ${block.reward} KRY to ${block.miner.slice(0, 8)}`);
+                // Remove processed transactions
+                this.pendingTransactions = this.pendingTransactions.filter(t => !processedTxIds.has(t.hash));
+                this.appendToBlockLog(block);
+                this.saveState();
+                this.updateUI();
+            }
+            async startMining() {
+                if (this.isMining) return;
+                this.isMining = true;
+                this.wallet.updateStatus("[SYS] Mining started");
+                this.wallet.appendToLog("mine", "Mining started");
+                while (this.isMining) {
+                    await this.mineBlock();
+                    await new Promise(resolve => setTimeout(resolve, this.BLOCK_TIME));
+                }
+            }
+            stopMining() {
+                this.isMining = false;
+                this.wallet.updateStatus("[SYS] Mining stopped");
+                this.wallet.appendToLog("mine", "Mining stopped");
+            }
+            async mineBlock() {
+                const previousHash = this.chain.length ? this.chain[this.chain.length - 1].hash : '0';
+                const block = {
+                    height: this.chain.length + 1,
+                    previousHash,
+                    transactions: [...this.pendingTransactions],
+                    timestamp: Date.now(),
+                    miner: this.wallet.pubKey,
+                    reward: this.getMiningRate()
+                };
+                block.hash = await this.wallet.sha256(JSON.stringify(block));
+                if (await this.verifyBlock(block)) {
+                    this.chain.push(block);
+                    this.processBlockTransactions(block);
+                    this.recordBlockTimestamp(block.timestamp);
+                    this.saveState();
+                    this.updateUI();
+                    this.wallet.broadcast({ type: 'block', data: block });
+                    this.wallet.updateStatus(`[SYS] Mined block ${block.height}`);
+                    this.wallet.appendToLog("mine", `Mined block ${block.height}`);
+                }
+            }
+            async syncWithPeers() {
+                Object.values(this.wallet.peers).forEach(({ channel }) => {
+                    if (channel?.readyState === 'open') {
+                        this.requestStateSync(channel);
+                    }
+                });
+            }
+            requestStateSync(channel) {
+                if (channel?.readyState === 'open') {
+                    channel.send(JSON.stringify({ type: 'state_request', pubKey: this.wallet.pubKey }));
+                }
+            }
+            async sendState(channel) {
+                if (channel.readyState === 'open') {
+                    const state = {
+                        chain: this.chain,
+                        utxos: this.utxos,
+                        stakes: this.stakes
+                    };
+                    channel.send(JSON.stringify({ type: 'state', data: state, pubKey: this.wallet.pubKey }));
+                }
+            }
+            async syncState(state) {
+                if (state.chain.length > this.chain.length) {
+                    this.chain = state.chain;
+                    this.utxos = state.utxos;
+                    this.stakes = state.stakes;
+                    this.pendingTransactions = this.pendingTransactions.filter(tx => 
+                        !this.chain.some(b => b.transactions.some(t => t.hash === tx.hash))
+                    );
+                    this.saveState();
+                    this.updateUI();
+                    this.wallet.updateStatus("[SYS] Synced with longer chain");
+                    this.wallet.appendToLog("node", "Synced with longer chain");
+                }
+            }
+            calculateStakeReward(amount, period) {
+                return amount * 0.01 * (period / 10);
+            }
+            recordBlockTimestamp(timestamp) {
+                this.recentBlockTimestamps.push(timestamp);
+                if (this.recentBlockTimestamps.length > this.MAX_RECENT_BLOCKS) {
+                    this.recentBlockTimestamps.shift();
+                }
+            }
+            getAverageBlockTime() {
+                if (this.recentBlockTimestamps.length < 2) return "N/A";
+                const diffs = this.recentBlockTimestamps.slice(1).map((t, i) => t - this.recentBlockTimestamps[i]);
+                const avg = diffs.reduce((a, b) => a + b, 0) / diffs.length / 1000;
+                return avg.toFixed(2);
+            }
+            appendToTxLog(tx) {
+                const txLog = document.getElementById('txLog');
+                const time = new Date(tx.timestamp).toLocaleTimeString();
+                let details = '';
+                if (tx.type === 'transfer') {
+                    details = `To: ${tx.outputs[0].to.slice(0, 8)}, Amount: ${tx.outputs[0].amount} KRY, Fee: ${tx.fee || 0} KRY`;
+                } else if (tx.type === 'stake') {
+                    details = `Amount: ${tx.stake.amount} KRY, Lock until: ${tx.stake.lockHeight}`;
+                } else if (tx.type === 'unstake') {
+                    details = `Amount: ${tx.outputs[0].amount} KRY`;
+                } else if (tx.type === 'burn') {
+                    details = `Burned: ${tx.burnAmount} KRY`;
+                }
+                txLog.innerHTML += `<div>[${time}] Tx ${tx.hash.slice(0, 8)}: ${details}</div>`;
+                txLog.scrollTop = txLog.scrollHeight;
+            }
+            appendToBlockLog(block) {
+                const blockLog = document.getElementById('blockLog');
+                const time = new Date(block.timestamp).toLocaleTimeString();
+                blockLog.innerHTML += `<div>[${time}] Block ${block.height}: Miner ${block.miner.slice(0, 8)}, Reward ${block.reward} KRY, Txs: ${block.transactions.length}</div>`;
+                blockLog.scrollTop = blockLog.scrollHeight;
+            }
+            loadChatHistory() {
+                const chatLog = document.getElementById('chatLog');
+                chatLog.innerHTML = 'Chat Messages:';
+            }
+            loadTxHistory() {
+                const txLog = document.getElementById('txLog');
+                txLog.innerHTML = 'Transactions:';
+                this.chain.forEach(block => block.transactions.forEach(tx => this.appendToTxLog(tx)));
+            }
+            loadBlockHistory() {
+                const blockLog = document.getElementById('blockLog');
+                blockLog.innerHTML = 'Blocks:';
+                this.chain.forEach(block => this.appendToBlockLog(block));
+            }
+            updateUI() {
+                if (!this.wallet.pubKey) return;
+                const balance = this.getBalance().toFixed(4);
+                const stake = this.getStake().toFixed(4);
+                document.getElementById('balance').textContent = balance;
+                document.getElementById('fractalStake').textContent = stake;
+                document.getElementById('miningRate').textContent = this.getMiningRate().toFixed(4);
+                document.getElementById('height').textContent = this.chain.length;
+                document.getElementById('peerCount').textContent = this.wallet.connectedPeers.size;
+                document.getElementById('avgBlockTime').textContent = this.getAverageBlockTime();
+                document.getElementById('stakeDetails').textContent = `KryoCases Frozen: ${this.getFrozenStakes()} | Unfroze: ${this.getThawedStakes()} | Bonus KRY: ${(this.getMiningRate() - this.MINING_REWARD).toFixed(4)} KRY`;
+                document.getElementById('thawBtn').innerHTML = `<i class="material-icons">lock_open</i>Thaw (${this.getThawableStakes()})`;
+                console.debug(`UI updated: Balance=${balance}, Stake=${stake}, Height=${this.chain.length}`);
+            }
         }
-    }
-
-    async syncState(state) {
-        if (state.stats.height > this.longestChain.stats.height) {
-            this.secondLongestChain = { ...this.longestChain };
-            this.longestChain = {
-                block: state.chain[state.chain.length - 1],
-                utxos: state.utxos,
-                fractalStakes: state.fractalStakes,
-                stats: state.stats
-            };
-            this.processedTxHashes = new Set(this.longestChain.block.transactions.map(tx => tx.hash));
-            this.saveState();
-            this.updateUI();
-            this.wallet.updateStatus(`[SYS] Synced to height ${this.longestChain.stats.height}`);
-        }
-    }
-
-    appendToLog(message) {
-        const log = document.getElementById(this.wallet.currentScreen === 'mine' ? 'mineLog' : this.wallet.currentScreen === 'staking' ? 'stakeLog' : 'log');
-        log.innerHTML += `<div>${message}</div>`;
-        log.scrollTop = log.scrollHeight;
-    }
-
-    updateUI() {
-        const balance = this.getBalance().toFixed(5);
-        const fractalStake = this.getFractalStake().toFixed(5);
-        const miningRate = this.getMiningRate().toFixed(5);
-        const peerCount = this.wallet.connectedPeers.size;
-        const height = this.longestChain.stats.height;
-        const frozenCases = this.getFrozenKryoCases();
-        const thawedCases = this.getThawedKryoCases();
-        const thawableCases = this.getThawableKryoCases();
-
-        document.getElementById('hudBalance').textContent = balance;
-        document.getElementById('hudFractalStake').textContent = fractalStake;
-        document.getElementById('hudMiningRate').textContent = `${miningRate} KRY/block`;
-        document.getElementById('hudHeight').textContent = height;
-        document.getElementById('hudPeerCount').textContent = peerCount;
-
-        document.getElementById('stakeDetails').textContent = `KryoCases Frozen: ${frozenCases} | Unfroze: ${thawedCases}`;
-        const thawBtn = document.getElementById('thawBtn');
-        thawBtn.textContent = `Thaw (${thawableCases})`;
-        thawBtn.disabled = thawableCases === 0;
-    }
-}
-
-const wallet = new CryptoWallet();
-
-</script></body>
+        const wallet = new CryptoWallet();
+    </script>
+</body>
 </html>
-
+<?php get_footer(); ?>
